@@ -442,3 +442,5 @@ Alice expects the system to provide immediate, real-time insights into the state
 ### 5. Standalone Local Execution
 
 Alice intends to use this solution as a private, standalone tool. The system is explicitly designed for local execution only, with no requirement for cloud-based infrastructure or remote connectivity. All financial data, including the Chart of Accounts and transaction logs, will be persisted within her local environment to ensure absolute control and privacy over ACME's sensitive financial information.
+
+The application system architecture is monolithic. The web page, web server and computational logic is package as a single executable as per Go embedding architecture.
