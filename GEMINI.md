@@ -95,13 +95,14 @@ Refer to the use cases in `/docs/model.md` to generate Web pages. Use only Javas
 - **ReactJS:** Follow this [https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md](https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md) when you generate ReactJS code
 - **Material-UI:** Follow this [https://cursorrules.org/article/material-ui-cursor-mdc-file](https://cursorrules.org/article/material-ui-cursor-mdc-file) when you use material-ui.
 
-## 5. Transformation Workflow
+## 5. Execution Rules
 
-You must execute tasks in the following sequence:
+- **Research:** Analyse this `/docs/concept.md` to understand the scope of this project. **DO NOT** use `README.md` as basis for your analysis.
+- **Strategise:** Propose a plan based on the relevant Context Registry before you execute further action.
+- **Modelling:** When  generate models and present the results in `/docs/model.md`. Ensure the output aligns with the project scope (do **NOT** stray from the project scope). Presents your observations and want for approval.
+- **Generate codes:** Upon approval of models generate appropriate Go, SQL and Web codes.
+- **Manual interventions:** There maybe instances where manual interventions may be required, and if any parts of documentations and codes have been augmented by manually inserted artefacts use that as a source of truth or pattern to follow.
 
-1. **Research:** Analyse this `/docs/concept.md` to understand the scope of this project. **DO NOT** use `README.md` as basis for your analysis.
-2. **Strategy:** Propose a plan based on the relevant Context Registry before you execute further action.
-3. **Generate DDD, semantic data models and use case models:** When the strategy is approved, generate models and present the results in `/docs/model.md`.
-4. **Validate models:** Ensure the output aligns with the project scope (do **NOT** stray from the project scope). Presents your observations and want for approval.
-5. **Generate codes:** Upon approval of models generate appropriate Go, SQL and Web codes.
-6. **Manual interventions:** There maybe instances where manual interventions may be required, and if any parts of documentations and codes have been augmented by manually inserted artefacts use that as a source of truth or pattern to follow.
+When you are asked to generate all artefacts, you are expected to follow this sequence: **Research** > **Modelling** > **Generate Codes**. In between these phases, you are to present your plan and seek approval. However, you may be asked only to generate or re-generate aspects of each phase alone.
+
+Generated artefacts many be augmented with more information or modified manually. When you are asked to generate, follow the **Manual intervention** rule.
