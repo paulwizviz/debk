@@ -62,6 +62,7 @@ erDiagram
 ## 3. Use Case Analysis
 
 ### Persona: Alice
+
 **Profile:** Alice is the founder of ACME Private Limited. She requires a standalone tool that provides absolute privacy and enforces the same rigour as a professional accountant.
 
 #### User Stories
@@ -121,16 +122,19 @@ sequenceDiagram
 ## 4. Design Thinking: Web Interface
 
 ### Dashboard (Financial Pulse)
+
 - **Top Row:** Real-time balances for Assets, Liabilities, and Equity.
 - **Middle Row:** Monthly Revenue vs. Expense chart (P&L Trend).
 - **Bottom Row:** Recent transactions feed with "Edit/View" links.
 
 ### Journal Entry "Workbench"
+
 - A dedicated interface for multi-line entries.
 - **Dynamic Balancing:** A "Difference" display that must reach zero before the "Post" button is enabled.
 - **Account Suggestions:** Intelligent filtering as Alice types (e.g., typing "Ex" suggests Expense accounts).
 
 ### Financial Statements (The "Alice View")
+
 - **P&L:** Categorised by Revenue and Expenses with a clear "Net Profit" footer.
 - **Balance Sheet:** Grouped by Current and Fixed Assets, Liabilities, and Equity.
 - **Drill-down:** Clicking any amount on a report opens the `genledger` view for that specific account and period.
@@ -148,6 +152,7 @@ The DEBK application is designed as a monolithic, standalone tool for local exec
 - **Direct Interaction:** The Web UI communicates with the internal web server via a local loopback interface, providing a desktop-like experience entirely within Alice's local environment.
 
 ### Benefits for Alice
+
 - **Zero Configuration:** No requirement to install or manage external web servers or database engines.
 - **Absolute Privacy:** All computational logic and financial records remain on Alice's local machine.
 - **Portability:** The single executable and its database file are easily moved, backed up, or archived.
