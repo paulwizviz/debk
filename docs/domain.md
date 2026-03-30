@@ -231,14 +231,14 @@ ACME receives a loan of $40,000 from EFG Bank to provide working capital. The lo
 
 #### 7 Feb 202X
 
-ACME receives $4,000 from Oscope for services rendered. The payment is received in ACME's bank account.
+ACME receives $4,000 from IniTech for services rendered. The payment is received in ACME's bank account.
 
 > Bank: EFG Account: 573241 (Asset)
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
 | ... | Balances forward | $50,800 | |
-| 7 Feb 202X | Payment from Oscope | $4,000 | |
+| 7 Feb 202X | Payment from IniTech | $4,000 | |
 
 > Service Revenue (Revenue)
 
