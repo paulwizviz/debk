@@ -23,7 +23,7 @@ The equation can be further expanded out as follows:
 Equity = Owner's equity - Dividends + Retained Earnings
 ```
 
-Retained Earnings are profit held for future use and that is calculated as follows.
+Retained Earnings are profit held for future use and are calculated as follows:
 
 ```text
 Retained Earnings = Revenue - Expenses
@@ -53,7 +53,7 @@ Doing a little rearrangement we have:
 Dividends + Expenses + Assets = Liabilities + Owner's Equity + Revenue
 ```
 
-The left hand side of the equation represents debits. The right hand side of the equation represents the credits.
+The left-hand side of the equation represents debits. The right-hand side of the equation represents the credits.
 
 Whether a debit or credit increases or decreases an account depends on the
 account type.
@@ -153,9 +153,9 @@ Here we examine the principles of bookkeeping from three perspectives:
 
 To illustrate the flow, here is the scenario involving a hypothetical small enterprise called ACME Private Limited. Alice is the founder of Acme.
 
-### Financial Transactions with T-Accounts
+### Recording with T-Accounts
 
-#### 1 Jan 202X
+#### Type: Equity Investment
 
 Alice and Bob found ACME Private Limited. Alice invests $1,000 and Bob invests $10,000. Both transfers are made into ACME's bank account (Bank: `EFG` Account: `573241`).
 
@@ -178,7 +178,7 @@ Alice and Bob found ACME Private Limited. Alice invests $1,000 and Bob invests $
 | :--- | :--- | :--- | :--- |
 | 1 Jan 202X | Initial Investment | | $10,000 |
 
-#### 3 Jan 202X
+#### Type: Internal Asset Transfer
 
 ACME withdraws $200 in cash from its business bank account to be held as petty cash.
 
@@ -186,7 +186,6 @@ ACME withdraws $200 in cash from its business bank account to be held as petty c
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| 1 Jan 202X | Investments (Alice & Bob) | $11,000 | |
 | 3 Jan 202X | Withdrawal for Petty Cash | | $200 |
 
 > Petty Cash (Asset)
@@ -195,7 +194,7 @@ ACME withdraws $200 in cash from its business bank account to be held as petty c
 | :--- | :--- | :--- | :--- |
 | 3 Jan 202X | From EFG-573241 | $200 | |
 
-#### 5 Jan 202X
+#### Type: Asset Acquisition (Cash)
 
 ACME uses $50 of the petty cash to buy a computer desk and chair.
 
@@ -203,8 +202,7 @@ ACME uses $50 of the petty cash to buy a computer desk and chair.
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| 3 Jan 202X | From EFG-573241 | $200 | |
-| 5 Jan 202X | Payment for furniture | | $50 |
+| 5 Jan 202X | Payment for desk and chair | | $50 |
 
 > Office Equipment (Asset)
 
@@ -212,15 +210,30 @@ ACME uses $50 of the petty cash to buy a computer desk and chair.
 | :--- | :--- | :--- | :--- |
 | 5 Jan 202X | Desk and chair | $50 | |
 
-#### 15 Jan 202X
+#### Type: Credit Purchase (Liability)
 
-ACME receives a loan of $40,000 from EFG Bank to provide working capital. The loan is deposited directly into ACME's account at the same bank.
+ACME purchases $100 of office supplies from "Supplies Co" on credit.
+
+> Office Supplies Expense (Expense)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 10 Jan 202X | Supplies from Supplies Co | $100 | |
+
+> Accounts Payable (Liability)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 10 Jan 202X | Purchase on credit | | $100 |
+
+#### Type: Debt Financing
+
+ACME receives a loan of $40,000 from EFG Bank on the 15th Jan 202X to provide working capital. The loan is deposited directly into ACME's account at the same bank.
 
 > Bank: EFG Account: 573241 (Asset)
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| ... | Balances forward | $10,800 | |
 | 15 Jan 202X | Bank Loan (EFG) | $40,000 | |
 
 > Bank Loan (EFG) (Liability)
@@ -229,24 +242,71 @@ ACME receives a loan of $40,000 from EFG Bank to provide working capital. The lo
 | :--- | :--- | :--- | :--- |
 | 15 Jan 202X | Loan from EFG Bank | | $40,000 |
 
-#### 7 Feb 202X
+#### Type: Payment on Credit (Liability)
 
-ACME receives $4,000 from IniTech for services rendered. The payment is received in ACME's bank account.
+ACME pays "Supplies Co" the $100 owed for the supplies purchased on credit.
+
+> Accounts Payable (Liability)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 20 Jan 202X | Payment to Supplies Co | $100 | |
 
 > Bank: EFG Account: 573241 (Asset)
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| ... | Balances forward | $50,800 | |
+| 20 Jan 202X | Settlement of debt | | $100 |
+
+#### Type: Revenue Recognition (Cash)
+
+ACME receives $4,000 from IniTech for services rendered on the 7 Feb 202X. The payment is received in ACME's bank account.
+
+> Bank: EFG Account: 573241 (Asset)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
 | 7 Feb 202X | Payment from IniTech | $4,000 | |
 
 > Service Revenue (Revenue)
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| 7 Feb 202X | Services for Oscope | | $4,000 |
+| 7 Feb 202X | Services for InitTech | | $4,000 |
 
-#### 30 Apr 202X
+#### Type: Revenue Recognition (Credit)
+
+ACME provides consulting services to Globex Corp for $2,500 on 1 March 202X. Globex is given 30 days credit.
+
+> Accounts Receivable (Asset)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 1 Mar 202X | Services for Globex Corp | $2,500 | |
+
+> Service Revenue (Revenue)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 1 Mar 202X | Services for Globex Corp | | $2,500 |
+
+#### Type: Collection of Credit (Asset)
+
+On 31 March 202X, Globex Corp pays the $2,500 invoice in full.
+
+> Bank: EFG Account: 573241 (Asset)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 31 Mar 202X | Payment from Globex Corp | $2,500 | |
+
+> Accounts Receivable (Asset)
+
+| Date | Description | Debit | Credit |
+| :--- | :--- | :--- | :--- |
+| 31 Mar 202X | Settlement of invoice | | $2,500 |
+
+#### Type: Operating Expense (Payroll)
 
 ACME pays Charlie his first month's salary of $1,000. $900 is paid to Charlie via bank transfer, and $100 is withheld for Tax.
 
@@ -254,7 +314,6 @@ ACME pays Charlie his first month's salary of $1,000. $900 is paid to Charlie vi
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| ... | Balances forward | $54,800 | |
 | 30 Apr 202X | Net Salary to Charlie | | $900 |
 
 > Salaries Expense (Expense)
@@ -267,9 +326,9 @@ ACME pays Charlie his first month's salary of $1,000. $900 is paid to Charlie vi
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| 30 Apr 202X | Withheld from Charlie | | $100 |
+| 30 Apr 202X | Withheld from Charlie for tax | | $100 |
 
-#### Monthly Interest Payment
+#### Type: Operating Expense (Finance Cost)
 
 The Bank Loan carries a small interest charge of $1 per month. By 30 June 202X, ACME has paid $5 in interest (for February, March, April, May, and June).
 
@@ -277,7 +336,6 @@ The Bank Loan carries a small interest charge of $1 per month. By 30 June 202X, 
 
 | Date | Description | Debit | Credit |
 | :--- | :--- | :--- | :--- |
-| ... | Balances forward | $53,900 | |
 | 30 Jun 202X | Total Interest Paid | | $5 |
 
 > Interest Expense (Expense)
@@ -286,7 +344,7 @@ The Bank Loan carries a small interest charge of $1 per month. By 30 June 202X, 
 | :--- | :--- | :--- | :--- |
 | 30 Jun 202X | Loan Interest | $5 | |
 
-#### 30 Jun 202X (Adjusting Entry)
+#### Type: Adjusting Entry (Non-cash)
 
 ACME records depreciation for its Office Equipment. It is estimated that the equipment has lost $10 of its value over the period. Instead of reducing the Office Equipment account directly, we use a **Contra-Asset** account called **Accumulated Depreciation**.
 
@@ -312,9 +370,11 @@ The steps involved in recording transactions in Journal form are as follows.
 | :--- | :--- | :--- | :--- |
 | 1010 | Cash (EFG Bank) | Asset | Debit |
 | 1020 | Petty Cash | Asset | Debit |
+| 1030 | Accounts Receivable | Asset | Debit |
 | 1500 | Office Equipment | Asset | Debit |
 | 1501 | Accum. Depreciation | Contra-Asset | Credit |
 | 2010 | Tax Payable | Liability | Credit |
+| 2020 | Accounts Payable | Liability | Credit |
 | 2100 | Bank Loan (EFG) | Liability | Credit |
 | 3010 | Owner's Capital (Alice) | Equity | Credit |
 | 3020 | Owner's Capital (Bob) | Equity | Credit |
@@ -322,6 +382,7 @@ The steps involved in recording transactions in Journal form are as follows.
 | 5010 | Salaries Expense | Expense | Debit |
 | 5020 | Depreciation Expense | Expense | Debit |
 | 5030 | Interest Expense | Expense | Debit |
+| 5040 | Office Supplies Expense | Expense | Debit |
 
 #### 1. Identify the Transaction
 
@@ -339,10 +400,18 @@ The business identifies source documents: bank transfer receipts for investments
 | | Cash (EFG Bank) | 1010 | | $200 |
 | 202X-01-05 | Office Equipment | 1500 | $50 | |
 | | Petty Cash | 1020 | | $50 |
+| 202X-01-10 | Office Supplies Expense | 5040 | $100 | |
+| | Accounts Payable | 2020 | | $100 |
 | 202X-01-15 | Cash (EFG Bank) | 1010 | $40,000 | |
 | | Bank Loan (EFG) | 2100 | | $40,000 |
+| 202X-01-20 | Accounts Payable | 2020 | $100 | |
+| | Cash (EFG Bank) | 1010 | | $100 |
 | 202X-02-07 | Cash (EFG Bank) | 1010 | $4,000 | |
 | | Service Revenue | 4010 | | $4,000 |
+| 202X-03-01 | Accounts Receivable | 1030 | $2,500 | |
+| | Service Revenue | 4010 | | $2,500 |
+| 202X-03-31 | Cash (EFG Bank) | 1010 | $2,500 | |
+| | Accounts Receivable | 1030 | | $2,500 |
 | 202X-04-30 | Salaries Expense | 5010 | $1,000 | |
 | | Cash (EFG Bank) | 1010 | | $900 |
 | | Tax Payable | 2010 | | $100 |
@@ -355,21 +424,24 @@ The business identifies source documents: bank transfer receipts for investments
 
 The ledger accounts summarise the activity to find the final balances as of 30 June 202X:
 
-- **Cash (EFG Bank) - 1010:** $1,000 + $10,000 + $40,000 + $4,000 - $200 - $900 - $5 = **$53,895 (Debit)**
+- **Cash (EFG Bank) - 1010:** $1,000 + $10,000 + $40,000 + $4,000 + $2,500 - $200 - $100 - $900 - $5 = **$56,295 (Debit)**
 - **Petty Cash - 1020:** $200 - $50 = **$150 (Debit)**
+- **Accounts Receivable - 1030:** $2,500 - $2,500 = **$0 (Debit)**
 - **Office Equipment - 1500:** **$50 (Debit)**
 - **Accum. Depreciation - 1501:** **$10 (Credit)**
 - **Tax Payable - 2010:** **$100 (Credit)**
+- **Accounts Payable - 2020:** $100 - $100 = **$0 (Credit)**
 - **Bank Loan (EFG) - 2100:** **$40,000 (Credit)**
 - **Owner's Capital - 3010 & 3020:** **$11,000 (Credit)**
-- **Service Revenue - 4010:** **$4,000 (Credit)**
+- **Service Revenue - 4010:** $4,000 + $2,500 = **$6,500 (Credit)**
 - **Salaries Expense - 5010:** **$1,000 (Debit)**
+- **Office Supplies Expense - 5040:** **$100 (Debit)**
 - **Depreciation Expense - 5020:** **$10 (Debit)**
 - **Interest Expense - 5030:** **$5 (Debit)**
 
 **Check Balance:**
-Assets ($53,895 + $150 + $50 - $10) = $54,085
-Liabilities ($100 + $40,000) + Equity ($11,000 + $4,000 - $1,000 - $10 - $5) = $54,085
+Assets ($56,295 + $150 + $0 + $50 - $10) = $56,485
+Liabilities ($100 + $0 + $40,000) + Equity ($11,000 + $6,500 - $1,000 - $100 - $10 - $5) = $56,485
 
 ### Financial Statements
 
@@ -380,16 +452,17 @@ Liabilities ($100 + $40,000) + Equity ($11,000 + $4,000 - $1,000 - $10 - $5) = $
 | Account | Amount |
 | :--- | :--- |
 | **Revenue** | |
-| Service Revenue (4010) | $4,000 |
-| **Total Revenue** | **$4,000** |
+| Service Revenue (4010) | $6,500 |
+| **Total Revenue** | **$6,500** |
 | | |
 | **Expenses** | |
 | Salaries Expense (5010) | ($1,000) |
+| Office Supplies Expense (5040) | ($100) |
 | Depreciation Expense (5020) | ($10) |
 | Interest Expense (5030) | ($5) |
-| **Total Expenses** | **($1,015)** |
+| **Total Expenses** | **($1,115)** |
 | | |
-| **Net Income (Profit)** | **$2,985** |
+| **Net Income (Profit)** | **$5,385** |
 
 #### Balance Sheet
 
@@ -398,16 +471,17 @@ Liabilities ($100 + $40,000) + Equity ($11,000 + $4,000 - $1,000 - $10 - $5) = $
 | Assets | Amount | Liabilities & Equity | Amount |
 | :--- | :--- | :--- | :--- |
 | **Current Assets** | | **Liabilities** | |
-| Cash - EFG Bank (1010) | $53,895 | Tax Payable (2010) | $100 |
-| Petty Cash (1020) | $150 | Bank Loan (EFG) (2100) | $40,000 |
+| Cash - EFG Bank (1010) | $56,295 | Tax Payable (2010) | $100 |
+| Petty Cash (1020) | $150 | Accounts Payable (2020) | $0 |
+| Accounts Receivable (1030) | $0 | Bank Loan (EFG) (2100) | $40,000 |
 | | | **Total Liabilities** | **$40,100** |
 | | | | |
 | **Fixed Assets** | | **Equity** | |
 | Office Equipment (1500) | $50 | Owner's Capital | $11,000 |
-| Less: Accum. Depr. (1501) | ($10) | Retained Earnings | $2,985 |
-| | | **Total Equity** | **$13,985** |
+| Less: Accum. Depr. (1501) | ($10) | Retained Earnings | $5,385 |
+| | | **Total Equity** | **$16,385** |
 | | | | |
-| **Total Assets** | **$54,085** | **Total Liab. & Equity** | **$54,085** |
+| **Total Assets** | **$56,485** | **Total Liab. & Equity** | **$56,485** |
 
 ## Proposed Software Solution
 
@@ -424,7 +498,7 @@ Alice expects to record business events as they occur, with the system ensuring 
 - **Capital and Funding Capture:** Capturing the inception of the business through initial equity investments and long-term debt (e.g. the $40,000 EFG Bank loan).
 - **Asset Lifecycle Management:** Recording the acquisition of physical resources and the non-cash adjusting entries, such as monthly depreciation, to ensure the "Net Book Value" on her balance sheet reflects reality.
 - **Operational Complexity (Payroll):** Handling multi-line transactions where a single event must be split—such as recording gross salary while simultaneously accounting for net payments and tax liabilities.
-- **Revenue Recognition:** Capturing income from services rendered (e.g. Oscope) to measure performance.
+- **Revenue Recognition:** Capturing income from services rendered (e.g. IniTech) to measure performance.
 - **Internal Treasury Movements:** Tracking the movement of value within the business (e.g. bank-to-petty-cash transfers) without mischaracterising them as profit or loss.
 
 ### 3. Integrity and Automated Validation
@@ -441,6 +515,6 @@ Alice expects the system to provide immediate, real-time insights into the state
 
 ### 5. Standalone Local Execution
 
-Alice intends to use this solution as a private, standalone tool. The system is explicitly designed for local execution only, with no requirement for cloud-based infrastructure or remote connectivity. All financial data, including the Chart of Accounts and transaction logs, will be persisted within her local environment to ensure absolute control and privacy over ACME's sensitive financial information.
+Alice intends to use this solution as a private, standalone tool. The system is explicitly designed for local execution only, with no requirement for cloud-based infrastructure or remote connectivity. All financial data, including the Chart of Accounts and transaction logs, will be persisted within her local environment to ensure absolute control and privacy over ACME's sensitive financial information. There is no direct connectivity to third-party applications like bank accounts or customers' applications. Alice will collect data from all sources and enter manually.
 
-The application system architecture is monolithic. The web page, web server and computational logic is package as a single executable as per Go embedding architecture.
+The application system architecture is monolithic. The web page, web server and computational logic are packaged as a single executable as per Go embedding architecture.

@@ -9,7 +9,7 @@ This document defines the architectural and logical models for the DEBK system, 
 | Term | Definition | Classification |
 | :--- | :--- | :--- |
 | **acct** | Account: A named record in the general ledger used to track the balance of a specific asset, liability, equity, revenue, or expense. | Entity |
-| **chatofacct** | Chart of Accounts: The hierarchical structure and listing of all `acct` defined for the enterprise. | Value Object |
+| **coa** | Chart of Accounts: The listing of all `acct` defined for the enterprise, categorised by `acctype`. | Value Object |
 | **fintxn** | Financial Transaction: A logical business event representing a movement of value (e.g., "Sale to IniTech"). | Domain Event |
 | **jnlentry** | Journal Entry: The technical recording of a `fintxn`, comprising multiple `jnline` records that must sum to zero. | Entity |
 | **jnline** | Journal Line: A single row within a `jnlentry` that associates an `acct` with a debit or credit amount. | Value Object |
@@ -17,6 +17,8 @@ This document defines the architectural and logical models for the DEBK system, 
 | **genledger** | General Ledger: The "source of truth" containing the full history of all posted `jnlentry` records. | Entity |
 | **period** | Accounting Period: A specific timeframe (e.g., Fiscal Year 202X) used for performance measurement and closing. | Value Object |
 | **closing** | Closing Entry: A special `jnlentry` that zeroes out temporary accounts (Revenue/Expense) into Retained Earnings. | Domain Event |
+| **trialbal** | Trial Balance: A report listing all `acct` balances to verify that total debits equal total credits. | Value Object |
+| **finstmt** | Financial Statement: Structured reports (Balance Sheet, Profit and Loss) derived from the `genledger`. | Value Object |
 
 ### Disambiguation
 
@@ -42,6 +44,7 @@ erDiagram
         string name
         acctype type
         boolean is_temporary "True for Revenue/Expenses"
+        boolean is_contra "True for Accumulated Depreciation"
     }
 
     jnlentry {
@@ -67,13 +70,26 @@ erDiagram
 
 #### User Stories
 
-1. **Internal Treasury Movement (Bank to Petty Cash):**
+1. **System Initialisation:**
+   - **Story:** Alice sets up her new business identity and initial Chart of Accounts.
+   - **Acceptance Criteria:**
+     - Alice defines her business name (ACME Private Limited).
+     - Alice establishes the starting `acct` records (e.g., EFG Bank, Owner's Capital).
+     - The system validates that the initial `coa` is correctly categorised by `acctype`.
+
+2. **Internal Treasury Movement (Bank to Petty Cash):**
    - **Story:** Alice moves $200 from her bank account to a cash box.
    - **Acceptance Criteria:**
      - The system records a $200 Debit to "Petty Cash" and a $200 Credit to "EFG Bank."
      - Total assets remain unchanged, but the composition is updated.
 
-2. **Complex Split Entry (Payroll):**
+3. **Revenue Recognition (Credit):**
+   - **Story:** Alice provides consulting services to Globex Corp on 30-day credit.
+   - **Acceptance Criteria:**
+     - A `jnlentry` is recorded with a $2,500 Debit to "Accounts Receivable" and a $2,500 Credit to "Service Revenue."
+     - The system correctly identifies "Accounts Receivable" as an Asset and "Service Revenue" as Revenue.
+
+4. **Complex Split Entry (Payroll):**
    - **Story:** Alice pays Charlie $1,000 gross, with $100 withheld for tax.
    - **Acceptance Criteria:**
      - A single `jnlentry` is created with three `jnline` records.
@@ -82,14 +98,14 @@ erDiagram
      - Credit: Tax Payable ($100).
      - The system rejects the entry if the total does not balance.
 
-3. **Asset Depreciation (Adjusting Entry):**
+5. **Asset Depreciation (Adjusting Entry):**
    - **Story:** Alice records the monthly $10 loss in value of her office furniture.
    - **Acceptance Criteria:**
      - Debit: Depreciation Expense ($10).
      - Credit: Accumulated Depreciation (Contra-Asset) ($10).
      - The Balance Sheet correctly shows "Net Book Value" (Asset - Contra-Asset).
 
-4. **Closing the Books:**
+6. **Closing the Books:**
    - **Story:** At year-end, Alice resets her Revenue and Expense accounts to zero.
    - **Acceptance Criteria:**
      - The system calculates the net balance of all temporary accounts.
@@ -153,6 +169,6 @@ The DEBK application is designed as a monolithic, standalone tool for local exec
 
 ### Benefits for Alice
 
-- **Zero Configuration:** No requirement to install or manage external web servers or database engines.
+- **Zero Configuration:** No requirement for install or manage external web servers or database engines.
 - **Absolute Privacy:** All computational logic and financial records remain on Alice's local machine.
 - **Portability:** The single executable and its database file are easily moved, backed up, or archived.
