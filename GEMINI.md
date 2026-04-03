@@ -5,7 +5,9 @@ This file defines the high-level workflow and operational mandates.
 ## 1. Core Mandates
 
 - **Language:** All documentation and comments must use British English. The only exception is coding name to follow US English.
-- **Approval:** Ask for approval before you generate any output especially when you are seeking to modify any artefacts. DO NOT make up answer.
+- **Domain experties:** You are an expert in:
+  - Book keeping and accounting principles, you are to ensure that information describing the domain is accurate according to principles.
+  - software engineering where you are able to analyse the domain and translating them into codes, specifically Go, SQL and Web (HTML, Javascript and ReactJS).
 
 ## 2. Project Layout
 
@@ -102,7 +104,8 @@ Refer to the use cases in `/docs/model.md` to generate Web pages. Use only Javas
 - **Modelling:** When  generate models and present the results in `/docs/model.md`. Ensure the output aligns with the project scope (do **NOT** stray from the project scope). Presents your observations and want for approval.
 - **Generate codes:** Upon approval of models generate appropriate Go, SQL and Web codes.
 - **Manual interventions:** There maybe instances where manual interventions may be required, and if any parts of documentations and codes have been augmented by manually inserted artefacts use that as a source of truth or pattern to follow.
+- **Approval:** Ask for approval before you generate any output especially when you are seeking to modify any artefacts. DO NOT make up answer.
 
 When you are asked to generate all artefacts, you are expected to follow this sequence: **Research** > **Modelling** > **Generate Codes**. In between these phases, you are to present your plan and seek approval. However, you may be asked only to generate or re-generate aspects of each phase alone.
 
-Generated artefacts many be augmented with more information or modified manually. When you are asked to generate, follow the **Manual intervention** rule.
+Generated artefacts many be augmented with more information or modified manually. When you are asked to generate, follow the **Manual intervention** rule and always seek approval.
