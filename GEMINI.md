@@ -54,16 +54,19 @@ Use the following techniques to generate models:
 - Error handling: Wrap errors with context using `%w`.
 - Include `context.Context` for cancellation.
 - Include a `doc.go` file and and Go doc in all packages with header like `//Package <package name> contains ...`
-- Include a filename in all packages that has the same name of the package like `some.go` for `package some` to include all interfaces, constants, errors, etc., but create separate files for implementations.
+- **DDD to Package Mapping:** Each DDD entity or logical component (e.g., `acct`, `fintxn`) must map to its own Go package (e.g., `internal/domain/acct`).
+- **Naming Stuttering:** Avoid redundant naming (stuttering) within a package. For example, use `acct.Detail` instead of `acct.Account`.
+- **Package Layout:** Include a filename in all packages that has the same name of the package (e.g., `acct.go` for `package acct`) to define all constants, interfaces, and core data structures (like `Detail`). Create separate files for logic and implementations.
 
 Under `/cmd/debk` folder, include main packages representing executable component.
 
-Under `/internal` create shared packages for consumption by main packages in `/cmd`.
+Under `/internal/domain` create packages for DDD components.
 
 #### SQL Statement
 
 - **SQLite:** This is the principal database.
 - **SQL conventions:** Use a dialect that is compatible for different types of SQL databases but focus only on SQLite.
+- **SQL Schema in Go:** All table and column names must be defined as `const` within the Go package. `CREATE TABLE` statements must be built by concatenating these constants.
 - **DB migration:** We will use Goose for data migration.
 
 ## 4. Output Standard
