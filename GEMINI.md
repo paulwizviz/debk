@@ -97,8 +97,21 @@ Generate text base models based on these conventions:
 
 Refer to the use cases in `/docs/model.md` to generate Web pages. Use only Javascript, ReactJS and Material-UI to create web pages.
 
-- **ReactJS:** Follow this [https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md](https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md) when you generate ReactJS code
+- **Frontend Source:** The React application source code is located in `/web`.
+- **Build Process:** The frontend is built using Vite, with the output directory configured to `internal/webserver/public`.
+- **Backend Integration:** The `internal/webserver` package uses `go:embed` to bundle the contents of `public/` into the Go binary, providing an `http.Handler` to serve these assets.
+- **ReactJS:** Follow this [https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md](https://github.com/pillarstudio/standards/blob/master/reactjs-guidelines.md) when you generate ReactJS code.
 - **Material-UI:** Follow this [https://cursorrules.org/article/material-ui-cursor-mdc-file](https://cursorrules.org/article/material-ui-cursor-mdc-file) when you use material-ui.
+
+### Build Process
+
+The build process is orchestrated using `scripts/debk.sh` and follows a multi-stage approach to produce a self-contained binary.
+
+- **Frontend Compilation:** The React application in `/web` is built first (`npm run build`). Assets are output to `internal/webserver/public`.
+- **Backend Build:** The Go application is built using a containerised environment defined in `build/debk/builder.yaml` and `build/debk/debk.dockerfile`.
+- **Cross-Compilation:** The `build/debk/debknative.sh` script executes within the builder container to produce binaries for macOS, Linux, and Windows.
+- **Artifacts:** Compiled binaries are stored in the `package/` directory.
+- **Cleanup:** The `scripts/debk.sh clean` command removes the `package/` directory and clears the embedded public assets.
 
 ## 5. Execution Rules
 
