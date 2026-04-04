@@ -1,0 +1,19 @@
+# version: '3.7'
+
+services:
+
+  debk:
+    build:
+      context: ../../
+      dockerfile: ./build/debk/debk.dockerfile
+      args:
+        GO_VER: ${GO_VER}
+    environment:
+      - APP_NAME=${APP_NAME}
+    image: ${DEBK_BUILD_IMAGE:-lotterystat/debk-builder:current}
+    container_name: ${DEBK_BUILD_CONTAINER:-debk-container}
+    working_dir: /opt
+    command: /opt/debknative.sh
+    volumes:
+      - ./debknative.sh:/opt/debknative.sh
+      - $PWD/package:/opt/build/package
