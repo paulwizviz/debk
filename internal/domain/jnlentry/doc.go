@@ -1,2 +1,2 @@
-// Package jnlentry provides data structures and functions related to the domain entity journal entry and journal line.
+// Package jnlentry contains the domain model, repository, and service for managing journal entries.
 package jnlentry

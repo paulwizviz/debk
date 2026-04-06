@@ -1,2 +1,2 @@
-// Package fintxn provides data structures and functions related to the domain event financial transaction.
+// Package fintxn contains the domain model and service for managing financial transactions as business events.
 package fintxn

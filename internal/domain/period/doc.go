@@ -1,2 +1,2 @@
-// Package period provides data structures and functions related to the domain entity accounting period.
+// Package period contains the domain model, repository, and service for managing accounting periods.
 package period

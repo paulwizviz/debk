@@ -1,6 +1,7 @@
 package fintxn
 
 import (
+	"context"
 	"time"
 )
 
@@ -13,4 +14,9 @@ type Detail struct {
 	Amount      float64
 	Currency    string
 	Metadata    map[string]string
+}
+
+// Service defines the business logic for handling financial transaction events.
+type Service interface {
+	HandleTransaction(ctx context.Context, tx *Detail) error
 }

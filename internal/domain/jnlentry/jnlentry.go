@@ -1,6 +1,7 @@
 package jnlentry
 
 import (
+	"context"
 	"time"
 
 	"debk/internal/domain/acct"
@@ -20,6 +21,10 @@ const (
 	ColLineAcctID  = "account_id"
 	ColLineAmount  = "amount"
 	ColLineSide    = "side"
+
+	// Journal line sides
+	Debit  = "Debit"
+	Credit = "Credit"
 )
 
 var (
@@ -59,4 +64,19 @@ type Line struct {
 	AccountID int
 	Amount    float64
 	Side      string // "Debit" or "Credit"
+}
+
+// Repository defines the interface for persisting and retrieving journal entries.
+type Repository interface {
+	Create(ctx context.Context, entry *Detail) error
+	GetByID(ctx context.Context, id int) (*Detail, error)
+	List(ctx context.Context) ([]Detail, error)
+	Delete(ctx context.Context, id int) error
+}
+
+// Service defines the business logic for managing journal entries.
+type Service interface {
+	PostEntry(ctx context.Context, entry *Detail) error
+	GetEntry(ctx context.Context, id int) (*Detail, error)
+	ListEntries(ctx context.Context) ([]Detail, error)
 }

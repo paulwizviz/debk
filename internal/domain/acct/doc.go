@@ -1,2 +1,2 @@
-// Package acct provides data structures and functions related to the domain entity account.
+// Package acct contains the domain model, repository, and service for managing accounts.
 package acct

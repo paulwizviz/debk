@@ -1,5 +1,7 @@
 package acct
 
+import "context"
+
 const (
 	TblAcct     = "account"
 	ColAcctID   = "id"
@@ -36,4 +38,21 @@ type Detail struct {
 	Type     string
 	IsTemp   bool
 	IsContra bool
+}
+
+// Repository defines the interface for persisting and retrieving accounts.
+type Repository interface {
+	Create(ctx context.Context, account *Detail) error
+	GetByID(ctx context.Context, id int) (*Detail, error)
+	GetByCode(ctx context.Context, code string) (*Detail, error)
+	List(ctx context.Context) ([]Detail, error)
+	Update(ctx context.Context, account *Detail) error
+	Delete(ctx context.Context, id int) error
+}
+
+// Service defines the business logic for managing accounts.
+type Service interface {
+	CreateAccount(ctx context.Context, account *Detail) error
+	GetAccount(ctx context.Context, id int) (*Detail, error)
+	ListAccounts(ctx context.Context) ([]Detail, error)
 }
