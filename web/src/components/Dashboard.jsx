@@ -1,142 +1,309 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Stack,
+  Chip,
+} from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import ContextBar from './ContextBar';
+import { useApp } from '../context/AppContext';
+import { apiGet } from '../api/client';
+import { formatMoney, formatDate, todayISODate } from '../utils/money';
 
 /**
- * Dashboard view providing the "Financial Pulse".
- * UI labels use British English.
+ * Financial Pulse dashboard (§4.2): A/L/E from balance sheet API, P&L range, recent activity (view-only, reverse hint).
  */
-const Dashboard = () => {
-  const [summary, setSummary] = useState({ assets: 0, liabilities: 0, equity: 0 });
-  const [recentEntries, setRecentEntries] = useState([]);
+export default function Dashboard() {
+  const { currency, activePeriod } = useApp();
+  const [bs, setBs] = useState(null);
+  const [pl, setPl] = useState(null);
+  const [entries, setEntries] = useState([]);
+  const [viewEntry, setViewEntry] = useState(null);
+  const [rangeFrom, setRangeFrom] = useState(() => {
+    const d = new Date();
+    d.setDate(1);
+    return d.toISOString().slice(0, 10);
+  });
+  const [rangeTo, setRangeTo] = useState(todayISODate);
+
+  const asOf = todayISODate();
 
   useEffect(() => {
-    const fetchData = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const [accRes, entryRes] = await Promise.all([
-          fetch('/api/accounts'),
-          fetch('/api/journal-entries')
+        const [bsData, ent] = await Promise.all([
+          apiGet(`/api/reports/balance-sheet?as_of=${asOf}`),
+          apiGet('/api/journal-entries'),
         ]);
-        const accounts = await accRes.json();
-        const entries = await entryRes.json();
-
-        // Simple balance calculation
-        const balances = {}; // AccountID -> Balance
-        (entries || []).forEach(entry => {
-          entry.Lines.forEach(line => {
-            if (!balances[line.AccountID]) balances[line.AccountID] = 0;
-            if (line.Side === 'Debit') balances[line.AccountID] += line.Amount;
-            else balances[line.AccountID] -= line.Amount;
-          });
-        });
-
-        let assets = 0, liabilities = 0, equity = 0;
-        (accounts || []).forEach(acc => {
-          const bal = balances[acc.ID] || 0;
-          if (acc.Type === 'Asset') assets += bal;
-          else if (acc.Type === 'Liability') liabilities += Math.abs(bal);
-          else if (acc.Type === 'Equity') equity += Math.abs(bal);
-          else if (acc.Type === 'Revenue') equity += Math.abs(bal); // Simplified
-          else if (acc.Type === 'Expense') equity -= bal; // Simplified
-        });
-
-        setSummary({ assets, liabilities, equity });
-        setRecentEntries((entries || []).slice(0, 5));
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        if (!cancelled) {
+          setBs(bsData);
+          setEntries(ent || []);
+        }
+      } catch (e) {
+        console.error(e);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchData();
-  }, []);
+  }, [asOf]);
 
-  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const plData = await apiGet(
+          `/api/reports/income-statement?from=${rangeFrom}&to=${rangeTo}`,
+        );
+        if (!cancelled) setPl(plData);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [rangeFrom, rangeTo]);
+
+  const recent = [...entries]
+    .sort((a, b) => {
+      const ta = new Date(a.entry_date || 0).getTime();
+      const tb = new Date(b.entry_date || 0).getTime();
+      return tb - ta;
+    })
+    .slice(0, 8);
+
+  const totalDebits = (e) =>
+    (e.lines || []).filter((l) => l.side === 'Debit').reduce((s, l) => s + l.amount, 0);
 
   return (
     <Box>
+      <ContextBar />
       <Typography variant="h4" gutterBottom>
         Financial Pulse
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Balances use the balance sheet report as of today. Posted journals are immutable—correct mistakes with a reversing
+        entry in the{' '}
+        <Button component={RouterLink} to="/workbench" size="small">
+          Journal workbench
+        </Button>
+        .
+      </Typography>
+
       <Grid container spacing={3}>
-        {/* Assets Summary */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 140 }}>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-              Total Assets
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              Total assets
             </Typography>
-            <Typography component="p" variant="h4">
-              £{summary.assets.toFixed(2)}
+            <Typography variant="h4">
+              {bs ? formatMoney(bs.total_assets, currency) : '—'}
             </Typography>
-            <Typography color="text.secondary" sx={{ flex: 1 }}>
-              on {today}
+            <Typography variant="caption" color="text.secondary">
+              As of {formatDate(asOf)}
             </Typography>
           </Paper>
         </Grid>
-        {/* Liabilities Summary */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 140 }}>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-              Total Liabilities
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              Total liabilities
             </Typography>
-            <Typography component="p" variant="h4">
-              £{summary.liabilities.toFixed(2)}
-            </Typography>
-            <Typography color="text.secondary" sx={{ flex: 1 }}>
-              on {today}
+            <Typography variant="h4">
+              {bs ? formatMoney(bs.total_liabilities, currency) : '—'}
             </Typography>
           </Paper>
         </Grid>
-        {/* Equity Summary */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 140 }}>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-              Total Equity
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              Total equity (book)
             </Typography>
-            <Typography component="p" variant="h4">
-              £{summary.equity.toFixed(2)}
+            <Typography variant="h4">
+              {bs ? formatMoney(bs.total_equity, currency) : '—'}
             </Typography>
-            <Typography color="text.secondary" sx={{ flex: 1 }}>
-              on {today}
-            </Typography>
+            {bs && Math.abs(bs.unclosed_pl) > 0.0001 && (
+              <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
+                Unclosed revenue/expense (net): {formatMoney(bs.unclosed_pl, currency)} · Equation check Δ{' '}
+                {formatMoney(bs.equation_delta, currency)}
+              </Typography>
+            )}
           </Paper>
         </Grid>
-        {/* Recent Transactions */}
+
         <Grid item xs={12}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-              Recent Transactions
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              Revenue vs expense (selected range)
             </Typography>
-            {recentEntries.length > 0 ? (
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+              <TextField
+                type="date"
+                label="From"
+                size="small"
+                value={rangeFrom}
+                onChange={(e) => setRangeFrom(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                type="date"
+                label="To"
+                size="small"
+                value={rangeTo}
+                onChange={(e) => setRangeTo(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Stack>
+            {pl && (
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body2" color="text.secondary">
+                    Total revenue
+                  </Typography>
+                  <Typography variant="h6">{formatMoney(pl.total_revenue, currency)}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body2" color="text.secondary">
+                    Total expenses
+                  </Typography>
+                  <Typography variant="h6">{formatMoney(pl.total_expenses, currency)}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body2" color="text.secondary">
+                    Net income
+                  </Typography>
+                  <Typography variant="h6" color={pl.net_income >= 0 ? 'success.main' : 'error.main'}>
+                    {formatMoney(pl.net_income, currency)}
+                  </Typography>
+                </Grid>
+              </Grid>
+            )}
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Paper sx={{ p: 2 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+              <Typography variant="h6" color="primary">
+                Recent activity
+              </Typography>
+              <Button component={RouterLink} to="/journal" size="small">
+                Full journal
+              </Button>
+            </Stack>
+            {activePeriod && (
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                Active period in the bar: {activePeriod.label || `#${activePeriod.id}`} — new posts must fall in this range.
+              </Typography>
+            )}
+            {recent.length > 0 ? (
               <Table size="small">
                 <TableHead>
                   <TableRow>
+                    <TableCell>Seq</TableCell>
                     <TableCell>Date</TableCell>
                     <TableCell>Description</TableCell>
-                    <TableCell align="right">Amount</TableCell>
+                    <TableCell>Kind</TableCell>
+                    <TableCell align="right">Debits</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {recentEntries.map((entry) => (
-                    <TableRow key={entry.ID}>
-                      <TableCell>{new Date(entry.EntryDate).toLocaleDateString('en-GB')}</TableCell>
-                      <TableCell>{entry.Description}</TableCell>
+                  {recent.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell>{entry.journal_seq}</TableCell>
+                      <TableCell>{formatDate(entry.entry_date)}</TableCell>
+                      <TableCell>{entry.description}</TableCell>
+                      <TableCell>
+                        <Chip size="small" label={entry.entry_kind || 'normal'} variant="outlined" />
+                      </TableCell>
+                      <TableCell align="right">{formatMoney(totalDebits(entry), currency)}</TableCell>
                       <TableCell align="right">
-                        £{entry.Lines.filter(l => l.Side === 'Debit').reduce((sum, l) => sum + l.Amount, 0).toFixed(2)}
+                        <Button size="small" onClick={() => setViewEntry(entry)}>
+                          View
+                        </Button>
+                        <Button
+                          size="small"
+                          component={RouterLink}
+                          to={`/workbench?reverse=${entry.id}`}
+                          state={{ reverseEntry: entry }}
+                        >
+                          Reverse in workbench
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             ) : (
-              <Box sx={{ py: 4, textAlign: 'center' }}>
-                <Typography variant="body1" color="text.secondary">
-                  No transactions recorded yet.
-                </Typography>
-              </Box>
+              <Typography color="text.secondary">No transactions yet. Use the workbench to post.</Typography>
             )}
           </Paper>
         </Grid>
       </Grid>
+
+      <Dialog open={!!viewEntry} onClose={() => setViewEntry(null)} maxWidth="md" fullWidth>
+        <DialogTitle>Journal entry #{viewEntry?.journal_seq}</DialogTitle>
+        <DialogContent dividers>
+          {viewEntry && (
+            <Stack spacing={1}>
+              <Typography variant="body2">
+                <strong>Date:</strong> {formatDate(viewEntry.entry_date)}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Description:</strong> {viewEntry.description}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Reference:</strong> {viewEntry.reference || '—'}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Kind:</strong> {viewEntry.entry_kind} · <strong>Closing:</strong>{' '}
+                {viewEntry.is_closing ? 'Yes' : 'No'}
+              </Typography>
+              <Table size="small" sx={{ mt: 1 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Account ID</TableCell>
+                    <TableCell>Side</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(viewEntry.lines || []).map((line) => (
+                    <TableRow key={line.id}>
+                      <TableCell>{line.account_id}</TableCell>
+                      <TableCell>{line.side}</TableCell>
+                      <TableCell align="right">{formatMoney(line.amount, currency)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Typography variant="caption" color="text.secondary">
+                Posted entries cannot be edited. Use Reverse to open the workbench with opposite lines.
+              </Typography>
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setViewEntry(null)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
-};
-
-export default Dashboard;
+}

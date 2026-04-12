@@ -1,23 +1,32 @@
 package acct
 
-import "context"
+import (
+	"context"
+	"errors"
+)
 
 const (
-	TblAcct     = "account"
-	ColAcctID   = "id"
-	ColAcctCode = "code"
-	ColAcctName = "name"
-	ColAcctType = "type"
-	ColIsTemp   = "is_temp"
-	ColIsContra = "is_contra"
+	TblAcct          = "account"
+	ColAcctID        = "id"
+	ColAcctBusiness  = "business_id"
+	ColAcctCode      = "code"
+	ColAcctName      = "name"
+	ColAcctType      = "type"
+	ColIsTemp        = "is_temp"
+	ColIsContra      = "is_contra"
 
-	// Account types
+	RetainedEarningsCode = "3999"
+	RetainedEarningsName = "Retained Earnings"
+
 	Asset     = "Asset"
 	Liability = "Liability"
 	Equity    = "Equity"
 	Revenue   = "Revenue"
 	Expense   = "Expense"
 )
+
+// ErrNotFound is returned when an account does not exist.
+var ErrNotFound = errors.New("account not found")
 
 var (
 	CreateAcctTableSQL = `CREATE TABLE IF NOT EXISTS ` + TblAcct + ` (
@@ -30,29 +39,31 @@ var (
 	)`
 )
 
-// Detail represents the details of an account, including its ID, code, name, type, and whether it is temporary or a contra account.
+// Detail represents a general ledger account.
 type Detail struct {
-	ID       int
-	Code     string
-	Name     string
-	Type     string
-	IsTemp   bool
-	IsContra bool
+	ID         int    `json:"id"`
+	BusinessID int    `json:"business_id"`
+	Code       string `json:"code"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	IsTemp     bool   `json:"is_temp"`
+	IsContra   bool   `json:"is_contra"`
 }
 
-// Repository defines the interface for persisting and retrieving accounts.
+// Repository persists accounts.
 type Repository interface {
 	Create(ctx context.Context, account *Detail) error
 	GetByID(ctx context.Context, id int) (*Detail, error)
-	GetByCode(ctx context.Context, code string) (*Detail, error)
-	List(ctx context.Context) ([]Detail, error)
+	GetByCodeForBusiness(ctx context.Context, businessID int, code string) (*Detail, error)
+	ListForBusiness(ctx context.Context, businessID int) ([]Detail, error)
 	Update(ctx context.Context, account *Detail) error
 	Delete(ctx context.Context, id int) error
 }
 
-// Service defines the business logic for managing accounts.
+// Service manages account invariants.
 type Service interface {
 	CreateAccount(ctx context.Context, account *Detail) error
 	GetAccount(ctx context.Context, id int) (*Detail, error)
-	ListAccounts(ctx context.Context) ([]Detail, error)
+	ListAccounts(ctx context.Context, businessID int) ([]Detail, error)
+	EnsureRetainedEarnings(ctx context.Context, businessID int) error
 }

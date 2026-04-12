@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -12,6 +13,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"syscall"
@@ -21,6 +23,8 @@ import (
 	"github.com/spf13/viper"
 	_ "modernc.org/sqlite"
 
+	_ "debk/internal/dbmigrate" // Goose Go migrations (must load even when using `go run ./cmd/debk/main.go`)
+	"debk/internal/domain/acct"
 	"debk/internal/restserv"
 	"debk/internal/webserver"
 )
@@ -122,14 +126,13 @@ func openBrowser(rawUrl string) error {
 }
 
 func run(ctx context.Context) error {
-	// Initialize configuration
 	if err := initConfig(); err != nil {
 		return fmt.Errorf("config: %w", err)
 	}
 
-	// Initialize database and migrations
 	dbPath := viper.GetString(dbPathKey)
-	db, err := goose.OpenDBWithDriver("sqlite", dbPath)
+	dsn := sqliteDSN(dbPath)
+	db, err := goose.OpenDBWithDriver("sqlite", dsn)
 	if err != nil {
 		return fmt.Errorf("opening db: %w", err)
 	}
@@ -139,13 +142,14 @@ func run(ctx context.Context) error {
 		}
 	}()
 
-	// Since Go migrations are registered in init(), goose will find them.
-	// We use an empty path since no SQL files are expected.
 	if err := goose.RunContext(ctx, "up", db, "."); err != nil {
 		return fmt.Errorf("migration: %w", err)
 	}
 
-	// Prepare listener and server
+	if err := bootstrapAccounts(ctx, db); err != nil {
+		return fmt.Errorf("bootstrap: %w", err)
+	}
+
 	ln, err := createListener()
 	if err != nil {
 		return err
@@ -163,7 +167,6 @@ func run(ctx context.Context) error {
 		Handler: mux,
 	}
 
-	// Start server in background
 	serverErr := make(chan error, 1)
 	go func() {
 		slog.Info("starting server", "url", rawUrl, "port", port)
@@ -172,15 +175,13 @@ func run(ctx context.Context) error {
 		}
 	}()
 
-	// Open browser once the server is starting
 	go func() {
-		time.Sleep(100 * time.Millisecond) // Tiny buffer for OS listener binding
+		time.Sleep(100 * time.Millisecond)
 		if err := openBrowser(rawUrl); err != nil {
 			slog.Warn("could not open browser", "error", err)
 		}
 	}()
 
-	// Wait for shutdown signal or server error
 	select {
 	case <-ctx.Done():
 		slog.Info("shutting down gracefully...")
@@ -192,8 +193,17 @@ func run(ctx context.Context) error {
 	}
 }
 
+func sqliteDSN(path string) string {
+	p := filepath.ToSlash(path)
+	return "file:" + url.PathEscape(p) + "?_pragma=foreign_keys(1)"
+}
+
+func bootstrapAccounts(ctx context.Context, db *sql.DB) error {
+	acctSvc := acct.NewService(acct.NewRepository(db))
+	return acctSvc.EnsureRetainedEarnings(ctx, 1)
+}
+
 func main() {
-	// Configure logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 

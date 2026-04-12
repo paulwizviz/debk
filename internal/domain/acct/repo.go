@@ -10,15 +10,15 @@ type repo struct {
 	db *sql.DB
 }
 
-// NewRepository creates a new account repository.
+// NewRepository creates an account repository.
 func NewRepository(db *sql.DB) Repository {
 	return &repo{db: db}
 }
 
 func (r *repo) Create(ctx context.Context, account *Detail) error {
-	query := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?)",
-		TblAcct, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra)
-	res, err := r.db.ExecContext(ctx, query, account.Code, account.Name, account.Type, account.IsTemp, account.IsContra)
+	query := fmt.Sprintf(`INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)`,
+		TblAcct, ColAcctBusiness, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra)
+	res, err := r.db.ExecContext(ctx, query, account.BusinessID, account.Code, account.Name, account.Type, account.IsTemp, account.IsContra)
 	if err != nil {
 		return fmt.Errorf("creating account: %w", err)
 	}
@@ -31,37 +31,39 @@ func (r *repo) Create(ctx context.Context, account *Detail) error {
 }
 
 func (r *repo) GetByID(ctx context.Context, id int) (*Detail, error) {
-	query := fmt.Sprintf("SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE %s = ?",
-		ColAcctID, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, TblAcct, ColAcctID)
+	query := fmt.Sprintf(`SELECT %s, %s, %s, %s, %s, %s, %s FROM %s WHERE %s = ?`,
+		ColAcctID, ColAcctBusiness, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, TblAcct, ColAcctID)
 	row := r.db.QueryRowContext(ctx, query, id)
 	var account Detail
-	if err := row.Scan(&account.ID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
+	if err := row.Scan(&account.ID, &account.BusinessID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("account not found: %d", id)
+			return nil, fmt.Errorf("%w: %d", ErrNotFound, id)
 		}
 		return nil, fmt.Errorf("getting account by id: %w", err)
 	}
 	return &account, nil
 }
 
-func (r *repo) GetByCode(ctx context.Context, code string) (*Detail, error) {
-	query := fmt.Sprintf("SELECT %s, %s, %s, %s, %s, %s FROM %s WHERE %s = ?",
-		ColAcctID, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, TblAcct, ColAcctCode)
-	row := r.db.QueryRowContext(ctx, query, code)
+func (r *repo) GetByCodeForBusiness(ctx context.Context, businessID int, code string) (*Detail, error) {
+	query := fmt.Sprintf(`SELECT %s, %s, %s, %s, %s, %s, %s FROM %s WHERE %s = ? AND %s = ?`,
+		ColAcctID, ColAcctBusiness, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra,
+		TblAcct, ColAcctCode, ColAcctBusiness)
+	row := r.db.QueryRowContext(ctx, query, code, businessID)
 	var account Detail
-	if err := row.Scan(&account.ID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
+	if err := row.Scan(&account.ID, &account.BusinessID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("account not found: %s", code)
+			return nil, fmt.Errorf("%w: %s", ErrNotFound, code)
 		}
 		return nil, fmt.Errorf("getting account by code: %w", err)
 	}
 	return &account, nil
 }
 
-func (r *repo) List(ctx context.Context) ([]Detail, error) {
-	query := fmt.Sprintf("SELECT %s, %s, %s, %s, %s, %s FROM %s",
-		ColAcctID, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, TblAcct)
-	rows, err := r.db.QueryContext(ctx, query)
+func (r *repo) ListForBusiness(ctx context.Context, businessID int) ([]Detail, error) {
+	query := fmt.Sprintf(`SELECT %s, %s, %s, %s, %s, %s, %s FROM %s WHERE %s = ? ORDER BY %s`,
+		ColAcctID, ColAcctBusiness, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra,
+		TblAcct, ColAcctBusiness, ColAcctCode)
+	rows, err := r.db.QueryContext(ctx, query, businessID)
 	if err != nil {
 		return nil, fmt.Errorf("listing accounts: %w", err)
 	}
@@ -70,7 +72,7 @@ func (r *repo) List(ctx context.Context) ([]Detail, error) {
 	var accounts []Detail
 	for rows.Next() {
 		var account Detail
-		if err := rows.Scan(&account.ID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
+		if err := rows.Scan(&account.ID, &account.BusinessID, &account.Code, &account.Name, &account.Type, &account.IsTemp, &account.IsContra); err != nil {
 			return nil, fmt.Errorf("scanning account: %w", err)
 		}
 		accounts = append(accounts, account)
@@ -79,9 +81,9 @@ func (r *repo) List(ctx context.Context) ([]Detail, error) {
 }
 
 func (r *repo) Update(ctx context.Context, account *Detail) error {
-	query := fmt.Sprintf("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
-		TblAcct, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, TblAcct, ColAcctID)
-	_, err := r.db.ExecContext(ctx, query, account.Code, account.Name, account.Type, account.IsTemp, account.IsContra, account.ID)
+	query := fmt.Sprintf(`UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?`,
+		TblAcct, ColAcctBusiness, ColAcctCode, ColAcctName, ColAcctType, ColIsTemp, ColIsContra, ColAcctID)
+	_, err := r.db.ExecContext(ctx, query, account.BusinessID, account.Code, account.Name, account.Type, account.IsTemp, account.IsContra, account.ID)
 	if err != nil {
 		return fmt.Errorf("updating account: %w", err)
 	}
@@ -89,7 +91,7 @@ func (r *repo) Update(ctx context.Context, account *Detail) error {
 }
 
 func (r *repo) Delete(ctx context.Context, id int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", TblAcct, ColAcctID)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE %s = ?`, TblAcct, ColAcctID)
 	_, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("deleting account: %w", err)

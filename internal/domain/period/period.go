@@ -8,8 +8,10 @@ import (
 const (
 	TblPeriod         = "period"
 	ColPeriodID       = "id"
+	ColPeriodBusiness = "business_id"
 	ColPeriodStart    = "start_date"
 	ColPeriodEnd      = "end_date"
+	ColPeriodLabel    = "label"
 	ColPeriodIsClosed = "is_closed"
 )
 
@@ -22,25 +24,28 @@ var (
 	)`
 )
 
-// Detail represents an accounting period.
+// Detail is an accounting period.
 type Detail struct {
-	ID       int
-	Start    time.Time
-	End      time.Time
-	IsClosed bool
+	ID         int       `json:"id"`
+	BusinessID int       `json:"business_id"`
+	Label      string    `json:"label"`
+	Start      time.Time `json:"start"`
+	End        time.Time `json:"end"`
+	IsClosed   bool      `json:"is_closed"`
 }
 
-// Repository defines the interface for persisting and retrieving accounting periods.
+// Repository persists periods.
 type Repository interface {
 	Create(ctx context.Context, period *Detail) error
 	GetByID(ctx context.Context, id int) (*Detail, error)
-	List(ctx context.Context) ([]Detail, error)
+	ListForBusiness(ctx context.Context, businessID int) ([]Detail, error)
 	Update(ctx context.Context, period *Detail) error
 }
 
-// Service defines the business logic for managing accounting periods.
+// Service manages periods.
 type Service interface {
-	OpenPeriod(ctx context.Context, start, end time.Time) (*Detail, error)
+	OpenPeriod(ctx context.Context, businessID int, label string, start, end time.Time) (*Detail, error)
 	ClosePeriod(ctx context.Context, id int) error
-	ListPeriods(ctx context.Context) ([]Detail, error)
+	ListPeriods(ctx context.Context, businessID int) ([]Detail, error)
+	GetPeriod(ctx context.Context, id int) (*Detail, error)
 }

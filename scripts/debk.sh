@@ -5,7 +5,7 @@ if [ "$(basename $(realpath .))" != "debk" ]; then
     exit 0
 fi
 
-export GO_VER=1.26.0
+export GO_VER=1.25.1
 export APP_NAME=debk
 
 export DEBK_BUILD_IMAGE=debk/debk-builder:current

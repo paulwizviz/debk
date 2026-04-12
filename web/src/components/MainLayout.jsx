@@ -15,48 +15,44 @@ import {
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
-  AccountBalance as AccountBalanceIcon,
-  ReceiptLong as ReceiptLongIcon,
+  Business as BusinessIcon,
+  MenuBook as MenuBookIcon,
+  EditNote as EditNoteIcon,
+  EventNote as EventNoteIcon,
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
-/**
- * MainLayout provides the persistent navigation structure.
- * UI labels use British English.
- */
+const menuItems = [
+  { text: 'Financial Pulse', icon: <DashboardIcon />, path: '/' },
+  { text: 'Business & books', icon: <BusinessIcon />, path: '/setup' },
+  { text: 'Journal (audit)', icon: <MenuBookIcon />, path: '/journal' },
+  { text: 'Journal workbench', icon: <EditNoteIcon />, path: '/workbench' },
+  { text: 'Periods & closing', icon: <EventNoteIcon />, path: '/periods' },
+  { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
+];
+
 const MainLayout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const menuItems = [
-    { text: 'Financial Pulse', icon: <DashboardIcon />, path: '/' },
-    { text: 'Chart of Accounts', icon: <AccountBalanceIcon />, path: '/accounts' },
-    { text: 'General Ledger', icon: <ReceiptLongIcon />, path: '/ledger' },
-  ];
 
   const drawer = (
     <div>
       <Toolbar />
       <List>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton 
+          <ListItem key={item.path} disablePadding>
+            <ListItemButton
               onClick={() => {
                 navigate(item.path);
                 setMobileOpen(false);
               }}
               selected={location.pathname === item.path}
             >
-              <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
+              <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
           </ListItem>
@@ -78,28 +74,22 @@ const MainLayout = ({ children }) => {
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={handleDrawerToggle}
+            onClick={() => setMobileOpen(!mobileOpen)}
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            DEBK
+            DEBK — Double-entry bookkeeping
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="navigation">
         <Drawer
           variant="temporary"
           open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
