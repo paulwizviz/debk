@@ -20,6 +20,8 @@ DEBK shall be **usable as a bookkeeping system**: it shall support recording tra
 
 The application shall support **one or many user accounts** with **access control**. Where more than one user is defined, each shall have **access rights** appropriate to their role.
 
+**Deployment assumption:** Several users (e.g. an owner-administrator, a configuration administrator, and a bookkeeper) shall use the **same running DEBK instance** on the **same platform**—**one** application process and **one** persisted ledger for that business. The product shall **not** be required to operate as a **distributed** system (e.g. no multi-node cluster or replicated application tier for core behaviour). How users reach that instance (e.g. one workstation or multiple sessions) is an implementation detail; the requirement is a **shared** application and **shared** books, with identity and permissions distinguishing operators.
+
 ## Configurable application
 
 Users shall be able to **customise** the application for their business. For example, they shall be able to define a **chart of accounts (COA)** aligned to their model—covering the assets, liabilities, equity, turnover, and expense accounts needed to record operations.
