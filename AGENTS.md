@@ -23,7 +23,7 @@ You may use web sources. If sources conflict, do not hallucinate—present findi
 
 **Secondary:** Ensure British English.
 
-### Domain Context and Ubiquitious Language (DDD)
+### Domain Context and Ubiquitous Language (DDD)
 
 Act as a bookkeeping and accounting expert.
 
@@ -74,6 +74,21 @@ Objective:
 
 - Ensure that `/docs/models/system.md` and `/docs/models/usecase.md` are within the scope of `/docs/specs/requirements.md` and `/docs/specs/examples.md`.
 
+### Use Case Analysis
+
+Act as a design thinking expert.
+
+Objective:
+
+- Update `/docs/models/usecase.md`
+- Update `/docs/models/ui.md`
+
+Principles:
+
+- Use the personas and empatise with them to address their pain-points
+- Create user stories that reflect the specs
+- Apply design principles to reflect UI
+
 ### Go Coding
 
 Act as a Go expert.
@@ -102,10 +117,9 @@ Act as an SQL expert. Use the document `/docs/models/logical.md` as guide.
 
 Act as a JavaScript, React, and Material-UI expert.
 
-- No TypeScript
-- Source: `/web`
-- Build: Vite → `internal/webserver/public`
-- Serving: `internal/webserver` via `//go:embed`
+Design specs:
+
+`/docs/models/ui.md`
 
 Follow:
 
@@ -114,7 +128,7 @@ Follow:
 
 ### Build Application
 
-- Use script: `/scripts/debk.sh`
+Use this script: `/scripts/debk.sh`
 
 ### Users Documentation
 
@@ -192,7 +206,10 @@ Ask before you deviate from the structure.
 
 ### Web
 
-- Compiled artefact in `/internal/webserver/public`
+- No TypeScript
+- Source: `/web`
+- Build: Vite → `internal/webserver/public`
+- Serving: `internal/webserver` via `//go:embed`
 
 ### Build DEBK Executable
 
