@@ -17,13 +17,13 @@ const (
 	PermReportRead    = "report:read"
 	PermUserRead      = "user:read"
 	PermUserWrite     = "user:write"
-	// PermUserInvite allows creating or managing bookkeeper-only operators (configuration administrator — Bob → Charlene).
 	PermUserInvite = "user:invite"
 )
 
 // rolePermissions maps each role to its permissions (union for multiple roles).
 var rolePermissions = map[string][]string{
-	operator.RoleFullAdmin: {
+	// Administrator: identity management, COA and business profile, and bookkeeping.
+	operator.RoleAdmin: {
 		PermBusinessRead, PermBusinessWrite,
 		PermCoaRead, PermCoaWrite,
 		PermJournalRead, PermJournalWrite,
@@ -31,16 +31,8 @@ var rolePermissions = map[string][]string{
 		PermReportRead,
 		PermUserRead, PermUserWrite, PermUserInvite,
 	},
-	// Configuration administrator (Bob): configure the app, invite/manage bookkeeper-only users, and post journals.
-	operator.RoleConfigure: {
-		PermBusinessRead, PermBusinessWrite,
-		PermCoaRead, PermCoaWrite,
-		PermJournalRead, PermJournalWrite,
-		PermPeriodRead, PermPeriodWrite,
-		PermReportRead,
-		PermUserRead, PermUserInvite,
-	},
-	operator.RoleBookkeep: {
+	// User: bookkeeping and reports only (read COA and business for context).
+	operator.RoleUser: {
 		PermBusinessRead,
 		PermCoaRead,
 		PermJournalRead, PermJournalWrite,

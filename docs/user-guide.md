@@ -24,7 +24,7 @@ When you open DEBK’s address in your browser, you always start at the **sign-i
 
 The first page is always the same route; the **title** tells you which case applies.
 
-- **First administrator (brand-new installation):** if **no operators** exist yet, the heading reads **Create first administrator**. Enter a **login** (a short sign-in name), an optional **display name**, and a **password**, then choose **Create account**. That account is a **full administrator**: it can manage other users, configuration, and bookkeeping. DEBK then opens **Identity & access** so you can add colleagues (for example a configuration administrator and a bookkeeper) before everyone starts using journals. You can return there any time from the **home** screen.
+- **First administrator (brand-new installation):** if **no operators** exist yet, the heading reads **Create first administrator**. Enter a **login** (a short sign-in name), an optional **display name**, and a **password**, then choose **Create account**. That account has **Administrator** access: identity management, chart of accounts, business profile, and bookkeeping. DEBK then opens **Identity & access** so you can add colleagues (**Administrator** or **User**) before everyone starts using journals. You can return there any time from the **home** screen.
 
 - **Normal sign-in:** once at least one user exists, the heading reads **Sign in**. Enter the **login** and **password** your administrator gave you, then **Sign in**.
 
@@ -38,11 +38,11 @@ The **Welcome** screen lists **tiles** for each area your roles allow: **Identit
 
 ### Identity & access (team onboarding)
 
-Users with the right permission see **Identity & access** from the home portal. There you maintain **operators** (who may sign in), their **roles**, and **passwords**. Full administrators can assign every role; a **configuration administrator** can typically add **bookkeepers** only. Use **Add user** to create an account, **Set password** when someone needs a new password, and **Disable** / **Enable** to stop or restore sign-in without deleting the person’s history.
+Users with **Administrator** access see **Identity & access** from the home portal. There you maintain **operators** (who may sign in), their **access type** (**Administrator** or **User**), and **passwords**. Use **Add user** to create an account, **Set password** when someone needs a new password, and **Disable** / **Enable** to stop or restore sign-in without deleting the person’s history.
 
 ![Identity & access: operator list, Add user, and per-user actions.](images/user-guide/onboarding-team-operators.png)
 
-If you never see this tile, your role is limited to configuration or bookkeeping only—ask a full administrator to adjust access.
+If you never see this tile, you are signed in as a **User** (bookkeeping only)—ask an **Administrator** to change your access if something is wrong.
 
 ---
 
@@ -282,7 +282,7 @@ If you change the layout or colours of the app, refresh the PNG files so this gu
 
 **Authenticated screens (home portal, identity, bookkeeping, configuration, reports):**
 
-- If you see **Sign in**, set `DEBK_USER_GUIDE_LOGIN` and `DEBK_USER_GUIDE_PASSWORD` to an operator that can reach every area you want in the guide (typically a **full administrator**).
+- If you see **Sign in**, set `DEBK_USER_GUIDE_LOGIN` and `DEBK_USER_GUIDE_PASSWORD` to an operator that can reach every area you want in the guide (typically an **Administrator**).
 - If you see **Create first administrator**, set `DEBK_USER_GUIDE_BOOTSTRAP_LOGIN` and `DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD` (and optionally `DEBK_USER_GUIDE_BOOTSTRAP_DISPLAY_NAME`) so the script can submit that form once; it will then capture the rest using the new account.
 
 Example (existing user):

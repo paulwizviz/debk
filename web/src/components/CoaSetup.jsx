@@ -5,7 +5,7 @@ import ContextBar from './ContextBar';
 import Accounts from './Accounts';
 import { useUserSession } from '../context/UserSessionContext';
 
-/** Chart of accounts only (configuration administrator / super user). */
+/** Chart of accounts only (operators with COA write permission, typically Administrator). */
 export default function CoaSetup() {
   const navigate = useNavigate();
   const { portalConfigure, canBusinessWrite } = useUserSession();

@@ -10,7 +10,7 @@ The application system architecture is monolithic. The web page, web server and 
 - **Local persistence:** All financial data is stored in a local SQLite database file, eliminating the need for external database servers.
 - **Direct interaction:** The web UI communicates with the internal web server via a local loopback interface, providing a desktop-like experience entirely within the operator's local environment.
 - **Identity and access management (IAM):** Described below; all mutating API routes and sensitive reads are gated on an **authenticated principal** with **role-based** permissions scoped to the **`business`** held in that database file.
-- **Collaborative use, not distributed:** Several operators (e.g. administrator, configuration administrator, bookkeeper personas in `usecase.md`) use the **same** running instance and **same** SQLite file. The system is **not** a distributed application: there is **no** multi-node DEBK cluster or replicated application tier in baseline scope.
+- **Collaborative use, not distributed:** Several operators (e.g. **Administrator** and **User** personas in `usecase.md`) use the **same** running instance and **same** SQLite file. The system is **not** a distributed application: there is **no** multi-node DEBK cluster or replicated application tier in baseline scope.
 - **Post-login shell (web):** After authentication, the SPA presents a **role hub** with up to three entry points—**identity & access**, **configuration (COA)**, and **bookkeeping**—each shown only if the signed-in operator’s roles include the corresponding permissions. Routes and layout are specified in `models/ui.md`; permission union per role matches `internal/authz/authz.go` (and the web mirror `web/src/authz/rolePermissions.js`).
 
 ## Identity and Access Management
@@ -31,7 +31,7 @@ DEBK shall support **one or many user accounts** with **access control** (`requi
 ### Logical Model (Suggested)
 
 - **`operator` (or `user`):** Human principal—stable id, unique **login name** (or email-style identifier) within the business, display name, **status** (active, disabled), **password hash** (never store plaintext passwords).
-- **`role`:** Named bundle of permissions aligned with product personas—e.g. **full administrator** (user lifecycle, destructive operations), **configuration administrator** (COA and application settings), **bookkeeper** (posting and reports). Roles are **assignable** per operator; optionally support **multiple roles** per operator with **union of permissions**.
+- **`role`:** Named bundle of permissions aligned with product access types—**Administrator** (identity management, COA, business profile, bookkeeping) and **User** (bookkeeping and reports only). Roles are **assignable** per operator; **multiple roles** per operator use the **union** of permissions (an operator with both `admin` and `user` is treated as **Administrator** only).
 - **`permission`:** Fine-grained capability checks evaluated by the server. Implemented permission strings include at least: `business:read`, `business:write`, `coa:read`, `coa:write`, `journal:read`, `journal:write`, `period:read`, `period:write`, `report:read`, `user:read`, `user:write`, `user:invite`. The UI may hide controls, but **authorisation must be enforced in the service layer** on every mutating call.
 - **`session`:** Server-issued session bound to operator id, **expiry**, and optional **rotation** on privilege change or password change. Prefer **opaque server-side session id** stored in an **HTTP-only, Secure, SameSite** cookie over long-lived JWTs in `localStorage` (reduces XSS token theft risk). For loopback-only HTTP, **Secure** may be relaxed with documented trade-offs; **HTTP-only** and **SameSite** remain valuable.
 - **`credential`:** Password verified with a modern slow hash (**Argon2id** preferred; **bcrypt** acceptable). Enforce a reasonable **minimum password policy** suitable for a local tool (length + complexity guidance in user docs, not excessive friction for SMEs).
@@ -44,16 +44,16 @@ DEBK shall support **one or many user accounts** with **access control** (`requi
 
 ### Bootstrap and Lifecycle
 
-1. **First run / bootstrap:** The first operator created (or the installer flow) gains **full administrator** rights and establishes the **`business`** record. Subsequent operators are created only by a principal holding **`user:invite`** (or equivalent).
+1. **First run / bootstrap:** The first operator created (or the installer flow) gains **Administrator** rights and establishes the **`business`** record. Subsequent operators are created only by a principal holding **`user:invite`** (Administrators only).
 2. **Day-to-day:** Operators authenticate; each HTTP request resolves **session → operator → effective permissions** before dispatch.
-3. **Recovery:** Local deployments have no central “forgot password” email. Options: **full administrator** resets another user’s password; optional **recovery codes** or **backup admin** account documented in the user guide. Out of scope unless specified: self-service email reset.
+3. **Recovery:** Local deployments have no central “forgot password” email. Options: an **Administrator** resets another user’s password; optional **recovery codes** or **backup admin** account documented in the user guide. Out of scope unless specified: self-service email reset.
 
 ### Security Controls (Defence in Depth)
 
 - **Rate limiting** on login and password-reset attempts (per client IP / session id) to mitigate brute force on a shared machine.
 - **Account lockout** or progressive backoff after repeated failures (balance usability vs abuse on localhost).
 - **CSRF protection** for cookie-based session flows on mutating routes.
-- **Authorisation on every write:** e.g. Charlene (bookkeeper role) must be **denied** COA writes and user administration; a **configuration administrator** may invite or manage **bookkeeper-only** operators but cannot assign **full administrator** or change non-bookkeeper operators unless they are a **full administrator** (`usecase.md`, `internal/authz`, `internal/domain/operator`).
+- **Authorisation on every write:** e.g. Charlene (**User**) must be **denied** COA writes and user administration; only **Administrators** may create or manage operators and assign **Administrator** or **User** access (`usecase.md`, `internal/authz`, `internal/domain/operator`).
 - **Immutability of posted journals** unchanged: corrections remain new entries; identity attaches to the posting actor.
 
 ### Relationship to Ledger Domain

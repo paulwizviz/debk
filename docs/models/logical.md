@@ -93,7 +93,7 @@ erDiagram
 ```
 
 - **`operator`:** Unique **login** per `business_id`; **password_hash** at rest; **status** active/disabled.
-- **`operator_role`:** One row per assigned role (e.g. `full_admin`, `configure`, `bookkeep`); effective permissions are the **union** of role bundles (`internal/authz/authz.go`).
+- **`operator_role`:** One row per assigned role (`admin`, `user`); effective permissions are the **union** of role bundles (`internal/authz/authz.go`).
 - **`session`:** Opaque session id bound to `operator_id` with expiry; issued to the browser as an HTTP-only cookie for authenticated API calls.
 
 Physical table and column names in SQLite follow `internal/dbmigrate` and `internal/domain/operator` / `session`.

@@ -5,11 +5,11 @@ const UserSessionContext = createContext(null);
 
 function rolesCanInviteUsers(roles) {
   if (!roles?.length) return false;
-  return roles.some((r) => r === 'full_admin' || r === 'configure');
+  return roles.some((r) => r === 'admin');
 }
 
-function rolesIsFullAdmin(roles) {
-  return roles?.includes('full_admin') ?? false;
+function rolesIsAdmin(roles) {
+  return roles?.includes('admin') ?? false;
 }
 
 /** Current operator from GET /api/auth/me (public shape). */
@@ -23,7 +23,7 @@ export function UserSessionProvider({ children, operator }) {
     return {
       operator,
       roles,
-      isFullAdmin: rolesIsFullAdmin(roles),
+      isAdmin: rolesIsAdmin(roles),
       canInviteUsers: rolesCanInviteUsers(roles),
       hasPerm: (perm) => hasPerm(roles, perm),
       hasAnyPerm: (...perms) => hasAnyPerm(roles, ...perms),

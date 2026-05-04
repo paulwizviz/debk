@@ -10,7 +10,7 @@ func TestAssetsServedNotSPA404(t *testing.T) {
 	mux := http.NewServeMux()
 	mux = New(mux)
 
-	for _, path := range []string{"/assets/", "/assets/main-4f40b31f.js"} {
+	for _, path := range []string{"/assets/", "/assets/main-05e79872.js"} {
 		t.Run(path, func(t *testing.T) {
 			rec := httptest.NewRecorder()
 			mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))

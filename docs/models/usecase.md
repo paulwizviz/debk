@@ -2,59 +2,50 @@
 
 ## Personas
 
-ACME Private Limited is a hypothetical **UK small manufacturing** company (bespoke **3D-printed** parts; principal **plant** is **printers**, **factory fit-out**, and **office equipment**; **two** shop-floor operators on payroll). Three personas show how **installation**, **user administration**, **application configuration**, and **bookkeeping** map to capabilities in DEBK.
+ACME Private Limited is a hypothetical **UK small manufacturing** company (bespoke **3D-printed** parts; principal **plant** is **printers**, **factory fit-out**, and **office equipment**; **two** shop-floor operators on payroll). Two **access types**—**Administrator** and **User**—show how **installation**, **user administration**, **application configuration**, and **bookkeeping** map to capabilities in DEBK.
 
 ### Assumption: one deployment, one platform
 
-**Alice, Bob, and Charlene** are modelled as **different people using the same DEBK installation** on the **same platform** (typically **one host**: one running **process**, one **local SQLite** database, one **`business`**). They each sign in as a separate **operator** with **different roles**; they are **not** each running an isolated copy of the app against separate servers, and the product is **not treated as distributed** (no cluster of DEBK nodes, no multi-region ledger replication in scope). How they open the UI in practice (e.g. separate browser profiles on one PC, or another device reaching the same loopback-bound server) is an implementation detail; the use case assumes **one shared application and one shared ledger**.
+**Alice and Charlene** are modelled as **different people using the same DEBK installation** on the **same platform** (typically **one host**: one running **process**, one **local SQLite** database, one **`business`**). They each sign in as a separate **operator** with **different roles**; they are **not** each running an isolated copy of the app against separate servers, and the product is **not treated as distributed** (no cluster of DEBK nodes, no multi-region ledger replication in scope). How they open the UI in practice (e.g. separate browser profiles on one PC, or another device reaching the same loopback-bound server) is an implementation detail; the use case assumes **one shared application and one shared ledger**.
 
-### Alice — founder and system owner
+### Alice — Administrator
 
 **Profile:** Founding shareholder of ACME. She wants a standalone tool with strong privacy and the same mechanical rigour as professional double-entry bookkeeping.
 
-**Responsibilities:**
+**Responsibilities (Administrator role):**
 
 - **Installs** DEBK on ACME’s machine (local execution per `requirements.md`).
-- Holds **full administrative rights**, including **adding and managing users** and assigning their access (e.g. who may configure the product vs who may post to the ledger).
-- May use any feature her role allows; the stories below assume she delegates routine configuration and posting to Bob and Charlene.
+- **Identity management:** create and manage operators, assign **Administrator** or **User** access, reset passwords, enable or disable sign-in.
+- **Configuration:** maintain the **chart of accounts** and related account metadata (`acctype`, temporary vs permanent, contra flags), and **legal entity & functional currency** where the product grants `business:write`.
+- **Bookkeeping:** may post journals and use all bookkeeping surfaces (same deployment) with `journal:write` and related permissions.
+- May delegate day-to-day posting to Charlene while retaining oversight; statutory **sign-off** remains outside the software (see `requirements.md`).
 
-### Bob — CFO and configuration administrator
-
-**Profile:** Chief Financial Officer and founding shareholder. He defines how ACME’s books are structured and reported internally.
-
-**Responsibilities:**
-
-- Holds **administrative rights** to **configure the application** for ACME—notably the **Chart of Accounts (COA)** and related account metadata (`acctype`, temporary vs permanent, contra flags) so the ledger reflects ACME’s operations.
-- May **maintain legal entity and functional currency** where the product grants `business:write` to his role (same operator model as in `system.md` / `internal/authz`).
-- May **invite or manage bookkeeper-only** colleagues (e.g. Charlene) when the product grants `user:invite`; **full** user lifecycle (e.g. assigning another full administrator) stays with Alice unless policy changes.
-- May **post journal entries** and use bookkeeping surfaces (same deployment) when his role includes `journal:write` (implementation: **configuration administrator** role in code).
-- Typically reviews outputs before management use; statutory **sign-off** remains outside the software (see `requirements.md`).
-
-### Charlene — bookkeeper
+### Charlene — User
 
 **Profile:** Operates the ledger day to day and produces management information.
 
-**Responsibilities:**
+**Responsibilities (User role):**
 
-- **Bookkeeping rights:** record **journal entries** (including multi-line splits), subject to validation (balanced debits and credits, valid accounts).
+- **Bookkeeping only:** record **journal entries** (including multi-line splits), subject to validation (balanced debits and credits, valid accounts).
 - **Produce financial statements** and supporting views (profit and loss account, balance sheet, trial balance, journal and account ledgers) for periods she is responsible for.
+- **Cannot** change the chart of accounts, business profile, or other operators’ accounts (enforced at the API).
 
 ## User stories
 
 - **System installation and user administration:**
   - **Primary actor:** Alice.
-  - **Story:** Alice installs DEBK, creates ACME’s **business** identity, and adds **Bob** and **Charlene** with the correct access (Bob: configuration administrator; Charlene: bookkeeper).
+  - **Story:** Alice installs DEBK, creates ACME’s **business** identity, and adds **Charlene** as a **User** (bookkeeping only). Alice remains an **Administrator** for identity, configuration, and posting as needed.
   - **Acceptance criteria:**
     - Installation completes per product packaging; core operation remains **local** with no mandatory cloud dependency.
     - Alice persists a `business` row (`legal_name`, `functional_currency`) as the isolation root for all ledger data.
-    - Alice can create **user accounts** bound to that business and assign **distinct capabilities**: at minimum **full administration** (install lifecycle and **user** lifecycle), **application configuration including COA** (Bob), and **posting plus financial reporting** (Charlene).
-    - The system **denies** operations outside the signed-in user’s effective permissions (e.g. Charlene cannot add users or alter COA structure if policy forbids it; Bob cannot remove Alice’s ownership if the product reserves that).
+    - Alice can create **operator** accounts bound to that business and assign **Administrator** (identity, COA, business profile, bookkeeping) or **User** (bookkeeping and reports only).
+    - The system **denies** operations outside the signed-in user’s effective permissions (e.g. Charlene cannot add users or alter COA structure).
 
 - **Chart of accounts and opening structure:**
-  - **Primary actor:** Bob.
-  - **Story:** Bob establishes ACME’s initial **COA** and opening `acct` rows so Charlene can post against a coherent structure.
+  - **Primary actor:** Alice.
+  - **Story:** Alice establishes ACME’s initial **COA** and opening `acct` rows so Charlene can post against a coherent structure.
   - **Acceptance criteria:**
-    - Bob defines starting `acct` records (e.g. bank current account (EFG), share capital, **plant & machinery (3D printers)**, **leasehold improvements – factory**, **office equipment**, payroll control accounts) aligned with `examples.md` / `domain.md`.
+    - Alice defines starting `acct` records (e.g. bank current account (EFG), share capital, **plant & machinery (3D printers)**, **leasehold improvements – factory**, **office equipment**, payroll control accounts) aligned with `examples.md` / `domain.md`.
     - The system ensures a **retained earnings** equity account exists (create if absent) for future closing and the **balance sheet**.
     - The system validates that the initial `coa` is correctly categorised by `acctype`.
 
@@ -89,7 +80,7 @@ ACME Private Limited is a hypothetical **UK small manufacturing** company (bespo
     - The **balance sheet** shows **carrying amount** for each tangible line (or net block) **net of** accumulated depreciation, consistent with posted lines.
 
 - **Closing the books:**
-  - **Primary actor:** Charlene (Bob may review totals before confirm, per ACME policy).
+  - **Primary actor:** Charlene (Alice may review totals before confirm, per ACME policy).
   - **Story:** At year-end, Charlene runs the closing process so temporary accounts (revenue, expense, and any dividends or drawings) reset to zero.
   - **Acceptance criteria:**
     - The system calculates the net activity of all **temporary** `acct` rows (`is_temporary = true`), including **dividends or drawings** where used.

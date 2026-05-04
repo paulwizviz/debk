@@ -4,8 +4,8 @@
 
 | Use case | UI surface(s) | Notes |
 | :--- | :--- | :--- |
-| 1a. Installation & user administration | **Installer / first-run** + **Identity & access** (`/identity`) | Alice (full administrator): bootstrap, create `business`, manage operators and roles. Shown from the **home portal** when `user:read`, `user:write`, or `user:invite` applies. Enforce permission checks on every mutating API. |
-| 1b. Chart of accounts & opening structure | **Configuration** (`/configure`) + optional **Legal entity & currency** (`/business`) | **COA** screen is COA-only. **Business profile** (legal name, functional currency) is a separate route for principals with `business:write`. Bob (configuration administrator): COA; Alice: both. |
+| 1a. Installation & user administration | **Installer / first-run** + **Identity & access** (`/identity`) | Alice (**Administrator**): bootstrap, create `business`, manage operators and access types. Shown from the **home portal** when `user:read`, `user:write`, or `user:invite` applies. Enforce permission checks on every mutating API. |
+| 1b. Chart of accounts & opening structure | **Configuration** (`/configure`) + optional **Legal entity & currency** (`/business`) | **COA** screen is COA-only. **Business profile** (legal name, functional currency) is a separate route for principals with `business:write`. **Administrator** operators reach both; **User** operators do not. |
 | 2. Internal treasury movement | **Journal workbench** (`/books/workbench`) | Same multi-line posting flow as other entries; optional quick labels (e.g. "Internal transfer") for narrative only. |
 | 3. Turnover (credit/cash) | **Journal workbench** | Balancing + account picker; no separate screen required unless templates are added later. |
 | 4. Complex split (payroll) | **Journal workbench** | Three+ lines; difference-to-zero gate matches acceptance criteria. |
@@ -21,7 +21,7 @@ After a successful session is established, the default route **`/`** is a **home
 
 | Tile | Shown when (permission union) | Primary route | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Identity & access** | `user:read` **or** `user:write` **or** `user:invite` | `/identity` | Operator directory, add user, roles, passwords, enable/disable (subject to server policy for non–full-admin actors). |
+| **Identity & access** | `user:read` **or** `user:write` **or** `user:invite` | `/identity` | Operator directory, add user, access type, passwords, enable/disable (**Administrators** only in the baseline product). |
 | **Configuration** | `coa:write` | `/configure` | **Chart of accounts only** (add/edit `acct` metadata). |
 | **Bookkeeping** | `journal:read` **or** `journal:write` **or** `report:read` | `/books` (nested layout) | Financial pulse, journal audit, workbench, periods, reports, account ledger—see **Bookkeeping layout** below. |
 
@@ -36,7 +36,7 @@ Use cases **1a** and **1b** use **dedicated routes** from the hub above. Operato
 
 ### Identity & access (use case 1a)
 
-- **Audience:** Principals with **identity** permissions (Alice: full lifecycle; Bob: invite/manage **bookkeeper-only** operators per server policy).
+- **Audience:** Principals with **identity** permissions (**Administrator** access: full operator lifecycle).
 - **Purpose:** Create and manage **operator** accounts bound to the current **`business`**: onboard colleagues, assign **roles**, and control lifecycle.
 - **Content:**
   - **Directory table:** display name, login identifier, **assigned roles** (badges), **status** (active / disabled), optional last sign-in.
@@ -45,7 +45,7 @@ Use cases **1a** and **1b** use **dedicated routes** from the hub above. Operato
 
 ### Configuration — chart of accounts (use case 1b)
 
-- **Audience:** Principals with **`coa:write`** (e.g. Bob; Alice).
+- **Audience:** Principals with **`coa:write`** (**Administrator** operators).
 - **Purpose:** Maintain **`acct`** rows: **`acctype`**, **`is_temporary`**, **`is_contra`**; validation errors inline; explicit confirmation when the system **auto-provisions retained earnings**.
 - **Business profile** (legal name, functional currency) is **not** mixed into this screen; it lives at **`/business`** for operators with **`business:write`**, linked from `/configure`.
 
@@ -90,7 +90,7 @@ Account ledger drill-downs use **`/books/ledger/account/:id`**. Narrow viewports
 
 ## Financial statements & trial balance (operator view)
 
-- **Access:** Surfaces in this subsection are used by **Charlene** (bookkeeping role) for routine production of reports; **Bob** or **Alice** may also open them if their roles include read access to financial statements.
+- **Access:** Surfaces in this subsection are used by **Charlene** (**User**) for routine production of reports; **Alice** (**Administrator**) may also open them.
 - **Profit and loss account:** Turnover, operating expenses, and **dividends or drawings** (when present) for the selected period; **profit for the period** footer consistent with closing logic.
 - **Balance sheet:** As of date; **current** and **tangible fixed** assets; **contra assets** netted against related assets so **carrying amount** matches use case 5 (e.g. office equipment less accumulated depreciation).
 - **Trial balance:** List all `acct` with debit/credit columns and totals (debits = credits). Supports validation mindset from `domain.md`.

@@ -18,30 +18,11 @@ func NewService(repo Repository) Service {
 	return &service{repo: repo}
 }
 
-func isFullAdmin(d *Detail) bool {
+func isAdmin(d *Detail) bool {
 	if d == nil {
 		return false
 	}
-	return slices.Contains(d.Roles, RoleFullAdmin)
-}
-
-func isBookkeeperOnlyRoles(roles []string) bool {
-	if len(roles) == 0 {
-		return false
-	}
-	for _, r := range roles {
-		if r != RoleBookkeep {
-			return false
-		}
-	}
-	return true
-}
-
-func isBookkeeperOnlyDetail(d *Detail) bool {
-	if d == nil {
-		return false
-	}
-	return isBookkeeperOnlyRoles(d.Roles)
+	return slices.Contains(d.Roles, RoleAdmin)
 }
 
 func dedupeRoles(roles []string) []string {
@@ -57,11 +38,19 @@ func dedupeRoles(roles []string) []string {
 	return out
 }
 
+// normalizeRoles keeps a single admin role if present, otherwise user roles.
+func normalizeRoles(roles []string) []string {
+	roles = dedupeRoles(roles)
+	if slices.Contains(roles, RoleAdmin) {
+		return []string{RoleAdmin}
+	}
+	return roles
+}
+
 func validRoles(roles []string) error {
 	allowed := map[string]struct{}{
-		RoleFullAdmin: {},
-		RoleConfigure: {},
-		RoleBookkeep:  {},
+		RoleAdmin: {},
+		RoleUser:  {},
 	}
 	for _, r := range roles {
 		if _, ok := allowed[r]; !ok {
@@ -91,7 +80,7 @@ func (s *service) Bootstrap(ctx context.Context, businessID int, login, displayN
 	if n > 0 {
 		return nil, ErrBootstrapDone
 	}
-	if err := validRoles([]string{RoleFullAdmin}); err != nil {
+	if err := validRoles([]string{RoleAdmin}); err != nil {
 		return nil, err
 	}
 	hash, err := hashPassword(plainPassword)
@@ -107,10 +96,10 @@ func (s *service) Bootstrap(ctx context.Context, businessID int, login, displayN
 		Status:       StatusActive,
 		CreatedAt:    now,
 	}
-	if err := s.repo.Insert(ctx, d, []string{RoleFullAdmin}); err != nil {
+	if err := s.repo.Insert(ctx, d, []string{RoleAdmin}); err != nil {
 		return nil, fmt.Errorf("bootstrap insert: %w", err)
 	}
-	d.Roles = []string{RoleFullAdmin}
+	d.Roles = []string{RoleAdmin}
 	p := d.Public()
 	return &p, nil
 }
@@ -122,11 +111,9 @@ func (s *service) Create(ctx context.Context, businessID int, login, displayName
 	if err := validRoles(roles); err != nil {
 		return nil, err
 	}
-	roles = dedupeRoles(roles)
-	if actor != nil {
-		if !isFullAdmin(actor) && !isBookkeeperOnlyRoles(roles) {
-			return nil, ErrInvitePolicy
-		}
+	roles = normalizeRoles(roles)
+	if actor != nil && !isAdmin(actor) {
+		return nil, ErrInvitePolicy
 	}
 	hash, err := hashPassword(plainPassword)
 	if err != nil {
@@ -187,19 +174,14 @@ func (s *service) Update(ctx context.Context, id int, displayName, status string
 		if err := validRoles(roles); err != nil {
 			return err
 		}
-		roles = dedupeRoles(roles)
+		roles = normalizeRoles(roles)
 	}
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
-	if actor != nil && !isFullAdmin(actor) {
-		if !isBookkeeperOnlyDetail(d) {
-			return ErrInvitePolicy
-		}
-		if len(roles) > 0 && !isBookkeeperOnlyRoles(roles) {
-			return ErrInvitePolicy
-		}
+	if actor != nil && !isAdmin(actor) {
+		return ErrInvitePolicy
 	}
 	dn := d.DisplayName
 	if displayName != "" {
@@ -219,11 +201,11 @@ func (s *service) Update(ctx context.Context, id int, displayName, status string
 }
 
 func (s *service) SetPassword(ctx context.Context, id int, plainPassword string, actor *Detail) error {
-	target, err := s.repo.GetByID(ctx, id)
+	_, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return err
 	}
-	if actor != nil && !isFullAdmin(actor) && !isBookkeeperOnlyDetail(target) {
+	if actor != nil && !isAdmin(actor) {
 		return ErrInvitePolicy
 	}
 	hash, err := hashPassword(plainPassword)

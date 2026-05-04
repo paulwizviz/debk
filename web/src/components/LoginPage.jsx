@@ -57,7 +57,7 @@ export default function LoginPage() {
         display_name: displayName || login,
         password,
       });
-      // First administrator should allocate other users (Bob, Charlene) next — not the journal.
+      // First Administrator should add other operators (e.g. Users) from Identity & access next.
       navigate('/identity', { replace: true });
     } catch (err) {
       setError(err.message || String(err));
@@ -90,7 +90,7 @@ export default function LoginPage() {
   const title = mode === 'bootstrap' ? 'Create first administrator' : 'Sign in';
   const subtitle =
     mode === 'bootstrap'
-      ? 'No users exist yet. Create the first account for this business (full administrator).'
+      ? 'No users exist yet. Create the first account for this business (Administrator access).'
       : 'Enter your credentials for this DEBK installation.';
 
   return (

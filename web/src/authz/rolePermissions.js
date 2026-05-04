@@ -17,7 +17,7 @@ export const P = {
 };
 
 const ROLE_PERMS = {
-  full_admin: [
+  admin: [
     P.businessRead,
     P.businessWrite,
     P.coaRead,
@@ -31,20 +31,7 @@ const ROLE_PERMS = {
     P.userWrite,
     P.userInvite,
   ],
-  configure: [
-    P.businessRead,
-    P.businessWrite,
-    P.coaRead,
-    P.coaWrite,
-    P.journalRead,
-    P.journalWrite,
-    P.periodRead,
-    P.periodWrite,
-    P.reportRead,
-    P.userRead,
-    P.userInvite,
-  ],
-  bookkeep: [
+  user: [
     P.businessRead,
     P.coaRead,
     P.journalRead,

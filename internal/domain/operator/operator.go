@@ -23,9 +23,8 @@ const (
 	StatusActive   = "active"
 	StatusDisabled = "disabled"
 
-	RoleFullAdmin = "full_admin"
-	RoleConfigure = "configure"
-	RoleBookkeep  = "bookkeep"
+	RoleAdmin = "admin"
+	RoleUser  = "user"
 )
 
 // Detail is a persisted operator (includes hash for repository use only).

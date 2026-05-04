@@ -4,14 +4,14 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  FormGroup,
   Paper,
+  Radio,
+  RadioGroup,
   Table,
   TableBody,
   TableCell,
@@ -24,13 +24,20 @@ import { PersonAdd as PersonAddIcon, VpnKey as VpnKeyIcon } from '@mui/icons-mat
 import { apiGet, apiPatch, apiPost } from '../api/client';
 import { useUserSession } from '../context/UserSessionContext';
 
-function rowIsBookkeeperOnly(row) {
-  return row.roles?.length > 0 && row.roles.every((r) => r === 'bookkeep');
+function formatRoles(slugs) {
+  if (!slugs?.length) return '';
+  return slugs
+    .map((r) => {
+      if (r === 'admin') return 'Administrator';
+      if (r === 'user') return 'User';
+      return r;
+    })
+    .join(', ');
 }
 
 export default function TeamOnboarding() {
   const navigate = useNavigate();
-  const { isFullAdmin, canInviteUsers, portalIdentity } = useUserSession();
+  const { isAdmin, canInviteUsers, portalIdentity } = useUserSession();
   const [rows, setRows] = useState([]);
   const [error, setError] = useState('');
   const [addOpen, setAddOpen] = useState(false);
@@ -39,7 +46,7 @@ export default function TeamOnboarding() {
   const [login, setLogin] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
-  const [roles, setRoles] = useState(['bookkeep']);
+  const [roleChoice, setRoleChoice] = useState('user');
   const [newPw, setNewPw] = useState('');
 
   const refresh = useCallback(async () => {
@@ -64,16 +71,8 @@ export default function TeamOnboarding() {
     setLogin('');
     setDisplayName('');
     setPassword('');
-    setRoles(isFullAdmin ? ['bookkeep'] : ['bookkeep']);
+    setRoleChoice('user');
     setAddOpen(true);
-  };
-
-  const toggleRole = (role) => {
-    setRoles((prev) => {
-      const has = prev.includes(role);
-      if (has) return prev.filter((r) => r !== role);
-      return [...prev, role];
-    });
   };
 
   const submitAdd = async (e) => {
@@ -84,10 +83,10 @@ export default function TeamOnboarding() {
         login,
         display_name: displayName || login,
         password,
-        roles: isFullAdmin ? roles : ['bookkeep'],
+        roles: [roleChoice],
       };
       if (!body.login || !body.password || !body.roles.length) {
-        setError('Login, password, and at least one role are required.');
+        setError('Login, password, and a role are required.');
         return;
       }
       await apiPost('/api/operators', body);
@@ -138,9 +137,10 @@ export default function TeamOnboarding() {
         Identity & access
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        {isFullAdmin
-          ? 'Create accounts for configuration administrators (e.g. Bob) or bookkeepers (e.g. Charlene). Only bookkeepers can be created by a configuration administrator without full admin rights.'
-          : 'Create bookkeeper accounts (e.g. Charlene). Ask a full administrator if you need another configuration administrator.'}
+        Create <strong>Administrator</strong> accounts (identity, chart of accounts, business profile, and bookkeeping)
+        or <strong>User</strong> accounts (bookkeeping only). Use <strong>Add user</strong> for a new sign-in,{' '}
+        <strong>Set password</strong> when someone needs a new password, and <strong>Disable</strong> /{' '}
+        <strong>Enable</strong> to stop or restore sign-in without deleting history.
       </Typography>
       {error ? (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
@@ -159,7 +159,7 @@ export default function TeamOnboarding() {
           <TableRow>
             <TableCell>Login</TableCell>
             <TableCell>Display name</TableCell>
-            <TableCell>Roles</TableCell>
+            <TableCell>Access</TableCell>
             <TableCell>Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -169,15 +169,15 @@ export default function TeamOnboarding() {
             <TableRow key={row.id}>
               <TableCell>{row.login}</TableCell>
               <TableCell>{row.display_name}</TableCell>
-              <TableCell>{(row.roles || []).join(', ')}</TableCell>
+              <TableCell>{formatRoles(row.roles)}</TableCell>
               <TableCell>{row.status}</TableCell>
               <TableCell align="right">
-                {(isFullAdmin || rowIsBookkeeperOnly(row)) && (
+                {isAdmin ? (
                   <Button size="small" startIcon={<VpnKeyIcon />} onClick={() => openPw(row)}>
                     Set password
                   </Button>
-                )}
-                {isFullAdmin ? (
+                ) : null}
+                {isAdmin ? (
                   <Button size="small" sx={{ ml: 1 }} onClick={() => toggleActive(row)}>
                     {row.status === 'active' ? 'Disable' : 'Enable'}
                   </Button>
@@ -216,46 +216,21 @@ export default function TeamOnboarding() {
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
             />
-            {isFullAdmin ? (
-              <Box sx={{ mt: 1 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Roles
-                </Typography>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={roles.includes('full_admin')}
-                        onChange={() => toggleRole('full_admin')}
-                      />
-                    }
-                    label="Full administrator"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={roles.includes('configure')}
-                        onChange={() => toggleRole('configure')}
-                      />
-                    }
-                    label="Configuration administrator (COA, business profile)"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={roles.includes('bookkeep')}
-                        onChange={() => toggleRole('bookkeep')}
-                      />
-                    }
-                    label="Bookkeeper (journal & reports)"
-                  />
-                </FormGroup>
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                New user will be assigned the <strong>bookkeeper</strong> role only.
-              </Typography>
-            )}
+            <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
+              Access type
+            </Typography>
+            <RadioGroup value={roleChoice} onChange={(ev) => setRoleChoice(ev.target.value)}>
+              <FormControlLabel
+                value="user"
+                control={<Radio />}
+                label="User — bookkeeping and reports only"
+              />
+              <FormControlLabel
+                value="admin"
+                control={<Radio />}
+                label="Administrator — identity, chart of accounts, business profile, and bookkeeping"
+              />
+            </RadioGroup>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setAddOpen(false)}>Cancel</Button>
