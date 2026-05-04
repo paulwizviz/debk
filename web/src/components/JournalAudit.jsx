@@ -64,7 +64,7 @@ export default function JournalAudit() {
       <ContextBar />
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h4">Journal (audit trail)</Typography>
-        <Button variant="contained" component={RouterLink} to="/workbench">
+        <Button variant="contained" component={RouterLink} to="/books/workbench">
           New entry
         </Button>
       </Stack>
@@ -134,7 +134,7 @@ export default function JournalAudit() {
                 <Button size="small" onClick={() => setDetail(e)}>
                   View
                 </Button>
-                <Button size="small" component={RouterLink} to={`/workbench?reverse=${e.id}`} state={{ reverseEntry: e }}>
+                <Button size="small" component={RouterLink} to={`/books/workbench?reverse=${e.id}`} state={{ reverseEntry: e }}>
                   Reverse
                 </Button>
               </TableCell>

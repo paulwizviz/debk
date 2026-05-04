@@ -66,7 +66,7 @@ async function main() {
     await goto('/');
     await save('01-financial-pulse.png');
 
-    await goto('/setup');
+    await goto('/configure');
     await save('02-business-profile.png');
 
     await page.getByRole('tab', { name: 'Chart of accounts' }).click();

@@ -121,7 +121,7 @@ export default function Accounts({ embedded }) {
                 <TableCell>{account.is_temp ? 'Yes' : 'No'}</TableCell>
                 <TableCell>{account.is_contra ? 'Yes' : 'No'}</TableCell>
                 <TableCell>
-                  <Button size="small" component={RouterLink} to={`/ledger/account/${account.id}`}>
+                  <Button size="small" component={RouterLink} to={`/books/ledger/account/${account.id}`}>
                     View ledger
                   </Button>
                 </TableCell>
