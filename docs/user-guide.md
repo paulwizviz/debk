@@ -16,17 +16,19 @@ Your books are only on your machine; they are not published to the web by DEBK i
 
 ---
 
-## Finding your way around: menu and main screen
+## Finding your way around: home portal and menus
 
-The **Financial Pulse** screen is a good home base. On a wide window you always see:
+After you sign in, the **home** screen lists up to **three areas** (you only see the ones your role allows):
 
-- The **menu** on the left (Financial Pulse, Business & books, Journal, and so on).
-- The **strip under the top bar** with your business name, currency, and **Active period** (explained in the next section).
-- The **main area** with summaries and tables.
+- **Identity & access** — manage who can sign in and what they may do.
+- **Configuration** — chart of accounts (ledger account list and details).
+- **Bookkeeping** — journals, periods, reports, and **Financial Pulse** (dashboard).
+
+Choose **Bookkeeping** to open the bookkeeping area. On a **wide** window, a **menu on the left** lists Financial Pulse, Journal (audit), Journal workbench, Periods & closing, and Reports. The **strip under the top bar** shows your business name, currency, and **Active period** (explained in the next section). The **main area** shows the screen you picked.
 
 ![Financial Pulse: sidebar menu on the left, context strip below the app title, and dashboard content in the main area.](images/user-guide/01-financial-pulse.png)
 
-Use the menu to switch tasks. You do not need to use every screen every day; the examples later in this guide tell you which one to open.
+Screenshots in this guide may still show an older single menu; if your build shows the **home tiles** first, use them to reach the same tasks. Use **Home** in the top bar to return to the tile screen. The examples later in this guide tell you which area or menu item to open.
 
 ---
 
@@ -34,7 +36,7 @@ Use the menu to switch tasks. You do not need to use every screen every day; the
 
 On most pages you will see a strip (just below **DEBK — Double-entry bookkeeping**) that shows:
 
-- **Your business name** — taken from what you entered under Business & books.
+- **Your business name** — taken from what you entered under **Configuration** → legal entity & currency (or the first-run flow).
 - **Functional currency** — the currency labels used everywhere (for example **GBP** or **USD**).
 - **Active period** — the accounting period you are “working in” right now. Choose it from the list before you post entries or read figures, so you stay aligned with the right month or quarter.
 
@@ -42,16 +44,19 @@ The same strip appears on the screenshot above. The active period you pick stays
 
 ---
 
-## What each menu item is for
+## What each bookkeeping menu item is for
+
+(These appear after you open **Bookkeeping** from the home screen.)
 
 | Menu | In plain terms |
 | ------ | ---------------- |
 | **Financial Pulse** | A quick snapshot: how things look today, a profit-and-loss style range you can change, and your latest journal entries. |
-| **Business & books** | Your company name and currency, plus the full list of accounts (your chart of accounts). |
 | **Journal (audit)** | A searchable list of everything you have posted; open any entry to read the lines or start a reversal. |
 | **Journal workbench** | Where you **create** new journal entries (debits and credits that must balance). |
 | **Periods & closing** | Define months or quarters, preview figures at closing time, and mark a period as closed when you are ready. |
 | **Reports** | Trial balance, profit and loss, and balance sheet for dates you choose. |
+
+**Configuration** (from the home tiles): chart of accounts only. **Legal name** and **functional currency** are on a separate screen linked from there (when your role allows).
 
 Some screens offer a link to open **one account’s ledger** — a running story of that account only.
 
@@ -63,8 +68,8 @@ Imagine you run a small consultancy called **Riverstone Advisory** and you work 
 
 ### 1. Business name and currency
 
-1. In the left menu, click **Business & books**.
-2. Stay on the **Business profile** tab (first tab).
+1. On the **home** screen after sign-in, open **Configuration** (if you do not see it, your role may not include COA or business editing—use an administrator account).
+2. Use **Legal entity & functional currency** (or equivalent link) to open the business profile.
 3. In **Legal name**, type: `Riverstone Advisory Ltd`.
 4. Set **Functional currency** to **GBP** (or your real currency).
 5. Click **Save**.
@@ -75,7 +80,7 @@ You should see the context strip update with your name and currency when you ope
 
 ### 2. Add a few accounts
 
-1. Still under **Business & books**, click the **Chart of accounts** tab.
+1. From **home**, open **Configuration** again to reach the **chart of accounts** screen (or use **Home** then **Configuration**).
 2. Add accounts you will actually use. For example:
 
    | Code | Name | Type (example) |
@@ -92,7 +97,7 @@ DEBK also keeps a **Retained earnings**-style equity account for you when the bo
 
 ### 3. Create your first accounting period
 
-1. Open **Periods & closing** from the menu.
+1. From **home**, open **Bookkeeping**, then **Periods & closing** from the left menu.
 2. Click to **add** or **create** a period (wording may vary slightly).
 3. Example values:
 
@@ -116,7 +121,7 @@ In the **context strip** at the top, open **Active period** and choose **January
 
 You invoiced a client **£2,000** and the money arrived in your current account.
 
-1. Go to **Journal workbench**.
+1. From **home**, open **Bookkeeping**, then **Journal workbench** in the left menu.
 2. Set **Entry date** to a day in January 2026 (inside your period).
 3. **Description:** `Consulting fees – Project North`.
 4. **Entry kind:** leave as **Normal** unless your accountant asked otherwise.
@@ -139,7 +144,7 @@ You can confirm it under **Journal (audit)** or on **Financial Pulse** in the re
 
 You paid **£800** rent from the same bank account.
 
-1. **Journal workbench** again.
+1. Open **Journal workbench** again (via **home** → **Bookkeeping** if you left that area).
 2. **Entry date:** a valid day in your open period.
 3. **Description:** `January office rent`.
 4. Lines:
@@ -159,7 +164,7 @@ The workbench looks the same as in the previous screenshot; only the accounts, a
 
 Suppose you posted the wrong amount and want to **undo** it with a matching opposite entry (your accountant may call this a reversing journal).
 
-1. Open **Financial Pulse** or **Journal (audit)**.
+1. From **home**, open **Bookkeeping**, then **Financial Pulse** or **Journal (audit)**.
 2. Locate the wrong entry in the list.
 3. Use the option to **reverse** or **prepare reversal** (if shown). That typically fills the **Journal workbench** with opposite debits and credits.
 4. Read the suggested lines, adjust the **description** if you like (for example `Reversal of incorrect rent posting`), and post as a **new** entry.
@@ -172,7 +177,7 @@ Always treat reversals as real journals: they should still balance and use corre
 
 ## Example: run reports at month end
 
-1. Open **Reports**.
+1. From **home**, open **Bookkeeping**, then **Reports**.
 2. **Trial balance**  
    - Pick an **as of** date (for example **31 January 2026**).  
    - Load the report. You should see each account and its balance; debits and credits should tie out across the list.
@@ -181,7 +186,7 @@ Always treat reversals as real journals: they should still balance and use corre
 4. **Balance sheet**  
    - Click that tab, pick the same **as of** date as your trial balance, then load.
 
-All figures use the **functional currency** you set under Business & books.
+All figures use the **functional currency** you set in the **legal entity & currency** screen (from **Configuration** on the home portal).
 
 ![Reports screen with Trial balance tab, date field, and Load button.](images/user-guide/07-reports-trial-balance.png)
 
@@ -191,7 +196,7 @@ All figures use the **functional currency** you set under Business & books.
 
 When a month is finished and you are ready to close it:
 
-1. Open **Periods & closing** (see the screenshot in the setup section above).
+1. From **home**, open **Bookkeeping**, then **Periods & closing** (see the screenshot in the setup section above).
 2. Find the period (for example **January 2026**).
 3. Open the **closing** or **closing assistant** action for that period. DEBK will show summaries that help you see temporary accounts and profit for the period.
 4. If your process requires a formal **closing** journal, go to **Journal workbench**, set **Entry kind** to **Closing** where appropriate, and post the entries your accountant expects (often involving **Retained earnings**). The assistant supports your judgement; you still post the actual journal in the workbench when needed.
@@ -219,7 +224,7 @@ Useful for answering “why is the bank balance this number?” without reading 
 | ----------------- | ------------- |
 | Blank page or “cannot connect” | Make sure DEBK is still running, then use the **same web address** the program gave you when it started (if you restart DEBK, it may show a slightly different address — use the new one). |
 | Cannot save a journal | Check that **debits equal credits**, the **date** is inside a period you created, and you picked real accounts from your chart. Read any message on the screen — it usually says what failed. |
-| Wrong currency on screen | Go to **Business & books → Business profile**, set the right **Functional currency**, and save again. |
+| Wrong currency on screen | Go to **Configuration** → **Legal entity & functional currency**, set the right **Functional currency**, and save again. |
 | You want a backup | Copy DEBK’s data folder from your computer while DEBK is **fully closed**, or use your normal backup software on that folder. Keep copies in a safe place the same way you would for any important files. |
 
 ---
