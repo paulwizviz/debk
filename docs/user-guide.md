@@ -16,19 +16,43 @@ Your books are only on your machine; they are not published to the web by DEBK i
 
 ---
 
-## Finding your way around: home portal and menus
+## Signing in and onboarding
 
-After you sign in, the **home** screen lists up to **three areas** (you only see the ones your role allows):
+When you open DEBK’s address in your browser, you always start at the **sign-in** screen unless the app has never had a user before (a **first installation** of the database).
 
-- **Identity & access** — manage who can sign in and what they may do.
-- **Configuration** — chart of accounts (ledger account list and details).
-- **Bookkeeping** — journals, periods, reports, and **Financial Pulse** (dashboard).
+### Sign-in screen (first administrator or returning user)
 
-Choose **Bookkeeping** to open the bookkeeping area. On a **wide** window, a **menu on the left** lists Financial Pulse, Journal (audit), Journal workbench, Periods & closing, and Reports. The **strip under the top bar** shows your business name, currency, and **Active period** (explained in the next section). The **main area** shows the screen you picked.
+The first page is always the same route; the **title** tells you which case applies.
+
+- **First administrator (brand-new installation):** if **no operators** exist yet, the heading reads **Create first administrator**. Enter a **login** (a short sign-in name), an optional **display name**, and a **password**, then choose **Create account**. That account is a **full administrator**: it can manage other users, configuration, and bookkeeping. DEBK then opens **Identity & access** so you can add colleagues (for example a configuration administrator and a bookkeeper) before everyone starts using journals. You can return there any time from the **home** screen.
+
+- **Normal sign-in:** once at least one user exists, the heading reads **Sign in**. Enter the **login** and **password** your administrator gave you, then **Sign in**.
+
+![Sign-in screen: Create first administrator when the database has no users yet, or Sign in when it does.](images/user-guide/onboarding-login.png)
+
+### Home portal (after you are signed in)
+
+The **Welcome** screen lists **tiles** for each area your roles allow: **Identity & access**, **Configuration**, and **Bookkeeping**. Your name appears under the welcome line. Use the **house** icon in the top bar to return here from anywhere else.
+
+![Welcome: home tiles for Identity & access, Configuration, and Bookkeeping.](images/user-guide/onboarding-home-portal.png)
+
+### Identity & access (team onboarding)
+
+Users with the right permission see **Identity & access** from the home portal. There you maintain **operators** (who may sign in), their **roles**, and **passwords**. Full administrators can assign every role; a **configuration administrator** can typically add **bookkeepers** only. Use **Add user** to create an account, **Set password** when someone needs a new password, and **Disable** / **Enable** to stop or restore sign-in without deleting the person’s history.
+
+![Identity & access: operator list, Add user, and per-user actions.](images/user-guide/onboarding-team-operators.png)
+
+If you never see this tile, your role is limited to configuration or bookkeeping only—ask a full administrator to adjust access.
+
+---
+
+## Finding your way around: bookkeeping layout
+
+From the home portal, open **Bookkeeping** to enter the bookkeeping area. On a **wide** window, a **menu on the left** lists Financial Pulse, Journal (audit), Journal workbench, Periods & closing, and Reports. The **strip under the top bar** (the **context** strip) shows your business name, currency, and **Active period** (explained in the next section). The **main area** shows the screen you picked.
 
 ![Financial Pulse: sidebar menu on the left, context strip below the app title, and dashboard content in the main area.](images/user-guide/01-financial-pulse.png)
 
-Screenshots in this guide may still show an older single menu; if your build shows the **home tiles** first, use them to reach the same tasks. Use **Home** in the top bar to return to the tile screen. The examples later in this guide tell you which area or menu item to open.
+The examples later in this guide name the **home** tile or the **bookkeeping** menu item to open. Use **Home** in the top bar to return to the welcome tiles.
 
 ---
 
@@ -56,7 +80,7 @@ The same strip appears on the screenshot above. The active period you pick stays
 | **Periods & closing** | Define months or quarters, preview figures at closing time, and mark a period as closed when you are ready. |
 | **Reports** | Trial balance, profit and loss, and balance sheet for dates you choose. |
 
-**Configuration** (from the home tiles): chart of accounts only. **Legal name** and **functional currency** are on a separate screen linked from there (when your role allows).
+**Configuration** (from the home tiles): the **chart of accounts** screen. When your role allows, use the **Legal entity & functional currency** button there to open the business profile (**legal name** and **functional currency**).
 
 Some screens offer a link to open **one account’s ledger** — a running story of that account only.
 
@@ -69,7 +93,7 @@ Imagine you run a small consultancy called **Riverstone Advisory** and you work 
 ### 1. Business name and currency
 
 1. On the **home** screen after sign-in, open **Configuration** (if you do not see it, your role may not include COA or business editing—use an administrator account).
-2. Use **Legal entity & functional currency** (or equivalent link) to open the business profile.
+2. Choose **Legal entity & functional currency** to open the business profile.
 3. In **Legal name**, type: `Riverstone Advisory Ltd`.
 4. Set **Functional currency** to **GBP** (or your real currency).
 5. Click **Save**.
@@ -231,12 +255,13 @@ Useful for answering “why is the bank balance this number?” without reading 
 
 ## Quick recap
 
-1. Set **business name** and **currency**.  
-2. Build your **chart of accounts** and create at least one **period**.  
-3. Pick the **active period** in the context strip.  
-4. Post balanced journals in the **workbench**.  
-5. Check **Financial Pulse** for a quick view and **Reports** for formal statements.  
-6. Use **Periods & closing** when a period is finished.
+1. **Sign in** (or create the **first administrator** once). Use **Identity & access** from the home portal if you need to add operators.  
+2. Set **business name** and **currency**.  
+3. Build your **chart of accounts** and create at least one **period**.  
+4. Pick the **active period** in the context strip.  
+5. Post balanced journals in the **workbench**.  
+6. Check **Financial Pulse** for a quick view and **Reports** for formal statements.  
+7. Use **Periods & closing** when a period is finished.
 
 DEBK is built around **one business** in one place on one computer — enough for many small organisations and sole traders who want clear double-entry books without sharing data online.
 
@@ -247,10 +272,35 @@ DEBK is built around **one business** in one place on one computer — enough fo
 If you change the layout or colours of the app, refresh the PNG files so this guide stays accurate.
 
 1. From the `web` folder, run `npm run build` so the embedded UI matches the latest design.
-2. Start DEBK and note the web address it prints (for example `http://localhost:12345`).
+2. Start DEBK and note the web address it prints (for example `http://127.0.0.1:54321`).
 3. Install the automation browser once: `npx playwright install chromium` (from `web/`).
-4. From `web/`, run:  
-   `DEBK_BASE_URL=http://localhost:12345 npm run capture-user-guide-screens`  
-   (replace the address with yours).
+4. From `web/`, run the capture script with your base URL and credentials.
 
-New images are written to `docs/images/user-guide/`. Commit them with your UI changes.
+**Always set** `DEBK_BASE_URL` to the address DEBK printed when it started.
+
+**First screen (`onboarding-login.png`):** the script saves this before it signs in. You will get **Create first administrator** if the database has no operators yet, or **Sign in** if users already exist.
+
+**Authenticated screens (home portal, identity, bookkeeping, configuration, reports):**
+
+- If you see **Sign in**, set `DEBK_USER_GUIDE_LOGIN` and `DEBK_USER_GUIDE_PASSWORD` to an operator that can reach every area you want in the guide (typically a **full administrator**).
+- If you see **Create first administrator**, set `DEBK_USER_GUIDE_BOOTSTRAP_LOGIN` and `DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD` (and optionally `DEBK_USER_GUIDE_BOOTSTRAP_DISPLAY_NAME`) so the script can submit that form once; it will then capture the rest using the new account.
+
+Example (existing user):
+
+```bash
+DEBK_BASE_URL=http://127.0.0.1:54321 \
+DEBK_USER_GUIDE_LOGIN=alice \
+DEBK_USER_GUIDE_PASSWORD='your-secret' \
+npm run capture-user-guide-screens
+```
+
+Example (bootstrap on an empty database):
+
+```bash
+DEBK_BASE_URL=http://127.0.0.1:54321 \
+DEBK_USER_GUIDE_BOOTSTRAP_LOGIN=alice \
+DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD='your-secret' \
+npm run capture-user-guide-screens
+```
+
+New and updated images are written to `docs/images/user-guide/`. Commit them with your UI changes.

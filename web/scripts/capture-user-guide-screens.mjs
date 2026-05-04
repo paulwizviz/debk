@@ -9,6 +9,12 @@
  * Run (from web/):
  *   DEBK_BASE_URL=http://127.0.0.1:PORT npm run capture-user-guide-screens
  *
+ * Authenticated screens need either:
+ *   - Normal sign-in: DEBK_USER_GUIDE_LOGIN and DEBK_USER_GUIDE_PASSWORD, or
+ *   - Empty operators DB (bootstrap): set DEBK_USER_GUIDE_BOOTSTRAP_LOGIN and
+ *     DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD so the script can submit "Create first administrator",
+ *     then the same values are used where a password is required for subsequent API/browser state.
+ *
  * Or pass the base URL as the first argument.
  */
 
@@ -46,9 +52,13 @@ async function main() {
     deviceScaleFactor: 1,
   });
 
-  async function goto(route) {
-    const url = `${base}${route.startsWith('/') ? route : `/${route}`}`;
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  async function save(name, options = {}) {
+    const p = path.join(outDir, name);
+    await page.screenshot({ path: p, fullPage: options.fullPage ?? false });
+    console.log('wrote', p);
+  }
+
+  async function waitAppChrome() {
     await page.getByText('DEBK — Double-entry bookkeeping', { exact: true }).waitFor({
       state: 'visible',
       timeout: 30000,
@@ -56,33 +66,96 @@ async function main() {
     await page.waitForTimeout(800);
   }
 
-  async function save(name, options = {}) {
-    const p = path.join(outDir, name);
-    await page.screenshot({ path: p, fullPage: options.fullPage ?? false });
-    console.log('wrote', p);
+  async function gotoShell(route) {
+    const url = `${base}${route.startsWith('/') ? route : `/${route}`}`;
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await waitAppChrome();
+  }
+
+  async function gotoLogin() {
+    const url = `${base}/login`;
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.getByRole('heading', { name: /Sign in|Create first administrator/ }).waitFor({
+      state: 'visible',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(500);
   }
 
   try {
-    await goto('/');
+    await gotoLogin();
+    await save('onboarding-login.png');
+    const bootstrapHeading = page.getByRole('heading', { name: 'Create first administrator' });
+    const isBootstrap = await bootstrapHeading.isVisible().catch(() => false);
+
+    if (isBootstrap) {
+      const bLogin = process.env.DEBK_USER_GUIDE_BOOTSTRAP_LOGIN?.trim();
+      const bPass = process.env.DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD?.trim();
+      if (!bLogin || !bPass) {
+        console.error(`
+Bootstrap mode (no operators yet). Wrote onboarding-login.png (Create first administrator).
+To capture the rest of the guide, either:
+  - Create the first administrator in the browser, then rerun with DEBK_USER_GUIDE_LOGIN and DEBK_USER_GUIDE_PASSWORD, or
+  - Rerun with DEBK_USER_GUIDE_BOOTSTRAP_LOGIN and DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD (and optional DEBK_USER_GUIDE_BOOTSTRAP_DISPLAY_NAME) so this script can submit the form.
+`);
+        process.exit(1);
+      }
+      const disp = process.env.DEBK_USER_GUIDE_BOOTSTRAP_DISPLAY_NAME?.trim() || bLogin;
+      await page.getByLabel('Login').fill(bLogin);
+      await page.getByLabel(/Display name \(optional\)/).fill(disp);
+      await page.locator('input[name="password"]').fill(bPass);
+      await page.getByRole('button', { name: 'Create account' }).click();
+      await page.getByText('DEBK — Double-entry bookkeeping', { exact: true }).waitFor({
+        state: 'visible',
+        timeout: 30000,
+      });
+      await page.waitForTimeout(800);
+    } else {
+      const login = process.env.DEBK_USER_GUIDE_LOGIN?.trim();
+      const password = process.env.DEBK_USER_GUIDE_PASSWORD?.trim();
+      if (!login || !password) {
+        console.error(`
+Wrote onboarding-login.png (Sign in). Set DEBK_USER_GUIDE_LOGIN and DEBK_USER_GUIDE_PASSWORD to capture authenticated screens.
+`);
+        process.exit(1);
+      }
+      await page.getByLabel('Login').fill(login);
+      await page.locator('input[name="password"]').fill(password);
+      await page.getByRole('button', { name: 'Sign in' }).click();
+      await waitAppChrome();
+    }
+
+    await gotoShell('/');
+    await save('onboarding-home-portal.png');
+
+    await gotoShell('/identity');
+    await page.waitForTimeout(600);
+    const identity = page.getByRole('heading', { name: 'Identity & access' });
+    if (await identity.isVisible().catch(() => false)) {
+      await save('onboarding-team-operators.png', { fullPage: true });
+    } else {
+      console.warn('skip onboarding-team-operators.png (Identity & access not available for this user)');
+    }
+
+    await gotoShell('/books');
     await save('01-financial-pulse.png');
 
-    await goto('/configure');
+    await gotoShell('/business');
     await save('02-business-profile.png');
 
-    await page.getByRole('tab', { name: 'Chart of accounts' }).click();
-    await page.waitForTimeout(500);
-    await save('03-chart-of-accounts.png');
+    await gotoShell('/configure');
+    await save('03-chart-of-accounts.png', { fullPage: true });
 
-    await goto('/periods');
+    await gotoShell('/books/periods');
     await save('04-periods-and-closing.png', { fullPage: true });
 
-    await goto('/workbench');
+    await gotoShell('/books/workbench');
     await save('05-journal-workbench.png', { fullPage: true });
 
-    await goto('/journal');
+    await gotoShell('/books/journal');
     await save('06-journal-audit.png', { fullPage: true });
 
-    await goto('/reports');
+    await gotoShell('/books/reports');
     await save('07-reports-trial-balance.png', { fullPage: true });
   } finally {
     await browser.close();
