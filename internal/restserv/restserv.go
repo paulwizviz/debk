@@ -8,11 +8,14 @@ import (
 	"strconv"
 	"time"
 
+	"debk/internal/authz"
 	"debk/internal/domain/acct"
 	"debk/internal/domain/business"
 	"debk/internal/domain/jnlentry"
+	"debk/internal/domain/operator"
 	"debk/internal/domain/period"
 	"debk/internal/domain/report"
+	"debk/internal/domain/session"
 )
 
 type RESTFul struct {
@@ -22,6 +25,8 @@ type RESTFul struct {
 	periodSvc    period.Service
 	businessSvc  business.Service
 	reportSvc    *report.Service
+	operatorSvc  operator.Service
+	sessionSvc   session.Service
 }
 
 func New(mux *http.ServeMux, db *sql.DB) *http.ServeMux {
@@ -37,6 +42,10 @@ func New(mux *http.ServeMux, db *sql.DB) *http.ServeMux {
 	businessRepo := business.NewRepository(db)
 	businessSvc := business.NewService(businessRepo)
 
+	opRepo := operator.NewRepository(db)
+	opSvc := operator.NewService(opRepo)
+	sessSvc := session.NewService(session.NewRepository(db))
+
 	r := &RESTFul{
 		db:          db,
 		acctSvc:     acctSvc,
@@ -44,6 +53,8 @@ func New(mux *http.ServeMux, db *sql.DB) *http.ServeMux {
 		periodSvc:   periodSvc,
 		businessSvc: businessSvc,
 		reportSvc:   report.NewService(db),
+		operatorSvc: opSvc,
+		sessionSvc:  sessSvc,
 	}
 
 	r.registerRoutes(mux)
@@ -51,6 +62,17 @@ func New(mux *http.ServeMux, db *sql.DB) *http.ServeMux {
 }
 
 func (r *RESTFul) registerRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/auth/bootstrap-status", r.getBootstrapStatus)
+	mux.HandleFunc("POST /api/auth/bootstrap", r.postBootstrap)
+	mux.HandleFunc("POST /api/auth/login", r.postLogin)
+	mux.HandleFunc("POST /api/auth/logout", r.postLogout)
+	mux.HandleFunc("GET /api/auth/me", r.getMe)
+
+	mux.HandleFunc("GET /api/operators", r.listOperators)
+	mux.HandleFunc("POST /api/operators", r.createOperator)
+	mux.HandleFunc("PATCH /api/operators/{id}", r.patchOperator)
+	mux.HandleFunc("POST /api/operators/{id}/password", r.postOperatorPassword)
+
 	mux.HandleFunc("GET /api/business", r.listBusiness)
 	mux.HandleFunc("GET /api/business/{id}", r.getBusiness)
 	mux.HandleFunc("PATCH /api/business/{id}", r.patchBusiness)
@@ -87,6 +109,9 @@ func parseBusinessID(q *http.Request) int {
 // --- Business ---
 
 func (r *RESTFul) listBusiness(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermBusinessRead); !ok {
+		return
+	}
 	list, err := r.businessSvc.List(req.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -96,9 +121,17 @@ func (r *RESTFul) listBusiness(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) getBusiness(w http.ResponseWriter, req *http.Request) {
+	op, ok := r.guard(w, req, authz.PermBusinessRead)
+	if !ok {
+		return
+	}
 	id, err := strconv.Atoi(req.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	if id != op.BusinessID {
+		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
 	d, err := r.businessSvc.Get(req.Context(), id)
@@ -110,9 +143,17 @@ func (r *RESTFul) getBusiness(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) patchBusiness(w http.ResponseWriter, req *http.Request) {
+	op, ok := r.guard(w, req, authz.PermBusinessWrite)
+	if !ok {
+		return
+	}
 	id, err := strconv.Atoi(req.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	if id != op.BusinessID {
+		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
 	var body business.Detail
@@ -132,6 +173,9 @@ func (r *RESTFul) patchBusiness(w http.ResponseWriter, req *http.Request) {
 // --- Accounts ---
 
 func (r *RESTFul) listAccounts(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermCoaRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	accounts, err := r.acctSvc.ListAccounts(req.Context(), bid)
 	if err != nil {
@@ -142,6 +186,9 @@ func (r *RESTFul) listAccounts(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) getAccount(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermCoaRead); !ok {
+		return
+	}
 	id, err := strconv.Atoi(req.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -160,6 +207,9 @@ func (r *RESTFul) getAccount(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) createAccount(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermCoaWrite); !ok {
+		return
+	}
 	var detail acct.Detail
 	if err := json.NewDecoder(req.Body).Decode(&detail); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -178,6 +228,9 @@ func (r *RESTFul) createAccount(w http.ResponseWriter, req *http.Request) {
 // --- Journal ---
 
 func (r *RESTFul) listEntries(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermJournalRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	entries, err := r.jnlSvc.ListEntries(req.Context(), bid)
 	if err != nil {
@@ -188,6 +241,9 @@ func (r *RESTFul) listEntries(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) getEntry(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermJournalRead); !ok {
+		return
+	}
 	id, err := strconv.Atoi(req.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -202,6 +258,9 @@ func (r *RESTFul) getEntry(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) postEntry(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermJournalWrite); !ok {
+		return
+	}
 	var detail jnlentry.Detail
 	if err := json.NewDecoder(req.Body).Decode(&detail); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -220,6 +279,9 @@ func (r *RESTFul) postEntry(w http.ResponseWriter, req *http.Request) {
 // --- Periods ---
 
 func (r *RESTFul) listPeriods(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermPeriodRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	periods, err := r.periodSvc.ListPeriods(req.Context(), bid)
 	if err != nil {
@@ -237,6 +299,9 @@ type openPeriodRequest struct {
 }
 
 func (r *RESTFul) openPeriod(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermPeriodWrite); !ok {
+		return
+	}
 	var opr openPeriodRequest
 	if err := json.NewDecoder(req.Body).Decode(&opr); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -254,6 +319,9 @@ func (r *RESTFul) openPeriod(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) closePeriod(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermPeriodWrite); !ok {
+		return
+	}
 	id, err := strconv.Atoi(req.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
@@ -274,6 +342,9 @@ func (r *RESTFul) closePeriod(w http.ResponseWriter, req *http.Request) {
 // --- Reports ---
 
 func (r *RESTFul) trialBalance(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermReportRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	asOf, err := time.Parse(time.DateOnly, req.URL.Query().Get("as_of"))
 	if err != nil {
@@ -289,6 +360,9 @@ func (r *RESTFul) trialBalance(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) incomeStatement(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermReportRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	from, err := time.Parse(time.DateOnly, req.URL.Query().Get("from"))
 	if err != nil {
@@ -309,6 +383,9 @@ func (r *RESTFul) incomeStatement(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *RESTFul) balanceSheet(w http.ResponseWriter, req *http.Request) {
+	if _, ok := r.guard(w, req, authz.PermReportRead); !ok {
+		return
+	}
 	bid := parseBusinessID(req)
 	asOf, err := time.Parse(time.DateOnly, req.URL.Query().Get("as_of"))
 	if err != nil {

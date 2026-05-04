@@ -10,7 +10,7 @@ export function AppProvider({ children }) {
     const v = window.sessionStorage.getItem('debk_active_period_id');
     return v ? parseInt(v, 10) || '' : '';
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const refreshBusiness = useCallback(async () => {
@@ -35,10 +35,6 @@ export function AppProvider({ children }) {
       setLoading(false);
     }
   }, [refreshBusiness, refreshPeriods]);
-
-  useEffect(() => {
-    refreshAll();
-  }, [refreshAll]);
 
   useEffect(() => {
     if (!periods.length) return;

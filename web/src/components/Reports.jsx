@@ -141,7 +141,7 @@ export default function Reports() {
                   <TableCell align="right">{formatMoney(r.debit, currency)}</TableCell>
                   <TableCell align="right">{formatMoney(r.credit, currency)}</TableCell>
                   <TableCell>
-                    <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                    <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                       Ledger
                     </Button>
                   </TableCell>
@@ -187,7 +187,7 @@ export default function Reports() {
                       </TableCell>
                       <TableCell align="right">{formatMoney(r.amount, currency)}</TableCell>
                       <TableCell>
-                        <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                        <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                           Ledger
                         </Button>
                       </TableCell>
@@ -207,7 +207,7 @@ export default function Reports() {
                       </TableCell>
                       <TableCell align="right">{formatMoney(r.amount, currency)}</TableCell>
                       <TableCell>
-                        <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                        <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                           Ledger
                         </Button>
                       </TableCell>
@@ -246,7 +246,7 @@ export default function Reports() {
                       </TableCell>
                       <TableCell align="right">{formatMoney(r.amount, currency)}</TableCell>
                       <TableCell>
-                        <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                        <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                           Ledger
                         </Button>
                       </TableCell>
@@ -268,7 +268,7 @@ export default function Reports() {
                       </TableCell>
                       <TableCell align="right">{formatMoney(r.amount, currency)}</TableCell>
                       <TableCell>
-                        <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                        <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                           Ledger
                         </Button>
                       </TableCell>
@@ -290,7 +290,7 @@ export default function Reports() {
                       </TableCell>
                       <TableCell align="right">{formatMoney(r.amount, currency)}</TableCell>
                       <TableCell>
-                        <Button size="small" component={RouterLink} to={`/ledger/account/${r.account_id}`}>
+                        <Button size="small" component={RouterLink} to={`/books/ledger/account/${r.account_id}`}>
                           Ledger
                         </Button>
                       </TableCell>

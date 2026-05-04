@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Grid,
   Paper,
   Typography,
@@ -21,6 +22,7 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 import ContextBar from './ContextBar';
 import { useApp } from '../context/AppContext';
+import { useUserSession } from '../context/UserSessionContext';
 import { apiGet } from '../api/client';
 import { formatMoney, formatDate, todayISODate } from '../utils/money';
 
@@ -29,6 +31,7 @@ import { formatMoney, formatDate, todayISODate } from '../utils/money';
  */
 export default function Dashboard() {
   const { currency, activePeriod } = useApp();
+  const { portalIdentity } = useUserSession();
   const [bs, setBs] = useState(null);
   const [pl, setPl] = useState(null);
   const [entries, setEntries] = useState([]);
@@ -94,13 +97,22 @@ export default function Dashboard() {
   return (
     <Box>
       <ContextBar />
+      {portalIdentity && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Allocate other users from the home screen under{' '}
+          <Button component={RouterLink} to="/identity" size="small" sx={{ verticalAlign: 'baseline' }}>
+            Identity & access
+          </Button>
+          .
+        </Alert>
+      )}
       <Typography variant="h4" gutterBottom>
         Financial Pulse
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Balances use the balance sheet report as of today. Posted journals are immutable—correct mistakes with a reversing
         entry in the{' '}
-        <Button component={RouterLink} to="/workbench" size="small">
+        <Button component={RouterLink} to="/books/workbench" size="small">
           Journal workbench
         </Button>
         .
@@ -203,7 +215,7 @@ export default function Dashboard() {
               <Typography variant="h6" color="primary">
                 Recent activity
               </Typography>
-              <Button component={RouterLink} to="/journal" size="small">
+              <Button component={RouterLink} to="/books/journal" size="small">
                 Full journal
               </Button>
             </Stack>
@@ -241,7 +253,7 @@ export default function Dashboard() {
                         <Button
                           size="small"
                           component={RouterLink}
-                          to={`/workbench?reverse=${entry.id}`}
+                          to={`/books/workbench?reverse=${entry.id}`}
                           state={{ reverseEntry: entry }}
                         >
                           Reverse in workbench

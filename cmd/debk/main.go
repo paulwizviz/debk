@@ -37,7 +37,8 @@ var (
 )
 
 var (
-	localhostRegex = regexp.MustCompile(`^http://localhost:[0-9]{1,5}$`)
+	// Browser URL must match the listener host (127.0.0.1) so "localhost" does not resolve to IPv6 ::1 while the server is IPv4-only.
+	localhostRegex = regexp.MustCompile(`^http://(127\.0\.0\.1|localhost):[0-9]{1,5}$`)
 )
 
 const (
@@ -157,7 +158,7 @@ func run(ctx context.Context) error {
 	defer ln.Close()
 
 	port := ln.Addr().(*net.TCPAddr).Port
-	rawUrl := fmt.Sprintf("http://localhost:%d", port)
+	rawUrl := fmt.Sprintf("http://127.0.0.1:%d", port)
 
 	mux := http.NewServeMux()
 	mux = restserv.New(mux, db)

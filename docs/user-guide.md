@@ -16,17 +16,43 @@ Your books are only on your machine; they are not published to the web by DEBK i
 
 ---
 
-## Finding your way around: menu and main screen
+## Signing in and onboarding
 
-The **Financial Pulse** screen is a good home base. On a wide window you always see:
+When you open DEBK’s address in your browser, you always start at the **sign-in** screen unless the app has never had a user before (a **first installation** of the database).
 
-- The **menu** on the left (Financial Pulse, Business & books, Journal, and so on).
-- The **strip under the top bar** with your business name, currency, and **Active period** (explained in the next section).
-- The **main area** with summaries and tables.
+### Sign-in screen (first administrator or returning user)
+
+The first page is always the same route; the **title** tells you which case applies.
+
+- **First administrator (brand-new installation):** if **no operators** exist yet, the heading reads **Create first administrator**. Enter a **login** (a short sign-in name), an optional **display name**, and a **password**, then choose **Create account**. That account has **Administrator** access: identity management, chart of accounts, business profile, and bookkeeping. DEBK then opens **Identity & access** so you can add colleagues (**Administrator** or **User**) before everyone starts using journals. You can return there any time from the **home** screen.
+
+- **Normal sign-in:** once at least one user exists, the heading reads **Sign in**. Enter the **login** and **password** your administrator gave you, then **Sign in**.
+
+![Sign-in screen: Create first administrator when the database has no users yet, or Sign in when it does.](images/user-guide/onboarding-login.png)
+
+### Home portal (after you are signed in)
+
+The **Welcome** screen lists **tiles** for each area your roles allow: **Identity & access**, **Configuration**, and **Bookkeeping**. Your name appears under the welcome line. Use the **house** icon in the top bar to return here from anywhere else.
+
+![Welcome: home tiles for Identity & access, Configuration, and Bookkeeping.](images/user-guide/onboarding-home-portal.png)
+
+### Identity & access (team onboarding)
+
+Users with **Administrator** access see **Identity & access** from the home portal. There you maintain **operators** (who may sign in), their **access type** (**Administrator** or **User**), and **passwords**. Use **Add user** to create an account, **Set password** when someone needs a new password, and **Disable** / **Enable** to stop or restore sign-in without deleting the person’s history.
+
+![Identity & access: operator list, Add user, and per-user actions.](images/user-guide/onboarding-team-operators.png)
+
+If you never see this tile, you are signed in as a **User** (bookkeeping only)—ask an **Administrator** to change your access if something is wrong.
+
+---
+
+## Finding your way around: bookkeeping layout
+
+From the home portal, open **Bookkeeping** to enter the bookkeeping area. On a **wide** window, a **menu on the left** lists Financial Pulse, Journal (audit), Journal workbench, Periods & closing, and Reports. The **strip under the top bar** (the **context** strip) shows your business name, currency, and **Active period** (explained in the next section). The **main area** shows the screen you picked.
 
 ![Financial Pulse: sidebar menu on the left, context strip below the app title, and dashboard content in the main area.](images/user-guide/01-financial-pulse.png)
 
-Use the menu to switch tasks. You do not need to use every screen every day; the examples later in this guide tell you which one to open.
+The examples later in this guide name the **home** tile or the **bookkeeping** menu item to open. Use **Home** in the top bar to return to the welcome tiles.
 
 ---
 
@@ -34,7 +60,7 @@ Use the menu to switch tasks. You do not need to use every screen every day; the
 
 On most pages you will see a strip (just below **DEBK — Double-entry bookkeeping**) that shows:
 
-- **Your business name** — taken from what you entered under Business & books.
+- **Your business name** — taken from what you entered under **Configuration** → legal entity & currency (or the first-run flow).
 - **Functional currency** — the currency labels used everywhere (for example **GBP** or **USD**).
 - **Active period** — the accounting period you are “working in” right now. Choose it from the list before you post entries or read figures, so you stay aligned with the right month or quarter.
 
@@ -42,16 +68,19 @@ The same strip appears on the screenshot above. The active period you pick stays
 
 ---
 
-## What each menu item is for
+## What each bookkeeping menu item is for
+
+(These appear after you open **Bookkeeping** from the home screen.)
 
 | Menu | In plain terms |
 | ------ | ---------------- |
 | **Financial Pulse** | A quick snapshot: how things look today, a profit-and-loss style range you can change, and your latest journal entries. |
-| **Business & books** | Your company name and currency, plus the full list of accounts (your chart of accounts). |
 | **Journal (audit)** | A searchable list of everything you have posted; open any entry to read the lines or start a reversal. |
 | **Journal workbench** | Where you **create** new journal entries (debits and credits that must balance). |
 | **Periods & closing** | Define months or quarters, preview figures at closing time, and mark a period as closed when you are ready. |
 | **Reports** | Trial balance, profit and loss, and balance sheet for dates you choose. |
+
+**Configuration** (from the home tiles): the **chart of accounts** screen. When your role allows, use the **Legal entity & functional currency** button there to open the business profile (**legal name** and **functional currency**).
 
 Some screens offer a link to open **one account’s ledger** — a running story of that account only.
 
@@ -63,8 +92,8 @@ Imagine you run a small consultancy called **Riverstone Advisory** and you work 
 
 ### 1. Business name and currency
 
-1. In the left menu, click **Business & books**.
-2. Stay on the **Business profile** tab (first tab).
+1. On the **home** screen after sign-in, open **Configuration** (if you do not see it, your role may not include COA or business editing—use an administrator account).
+2. Choose **Legal entity & functional currency** to open the business profile.
 3. In **Legal name**, type: `Riverstone Advisory Ltd`.
 4. Set **Functional currency** to **GBP** (or your real currency).
 5. Click **Save**.
@@ -75,7 +104,7 @@ You should see the context strip update with your name and currency when you ope
 
 ### 2. Add a few accounts
 
-1. Still under **Business & books**, click the **Chart of accounts** tab.
+1. From **home**, open **Configuration** again to reach the **chart of accounts** screen (or use **Home** then **Configuration**).
 2. Add accounts you will actually use. For example:
 
    | Code | Name | Type (example) |
@@ -92,7 +121,7 @@ DEBK also keeps a **Retained earnings**-style equity account for you when the bo
 
 ### 3. Create your first accounting period
 
-1. Open **Periods & closing** from the menu.
+1. From **home**, open **Bookkeeping**, then **Periods & closing** from the left menu.
 2. Click to **add** or **create** a period (wording may vary slightly).
 3. Example values:
 
@@ -116,7 +145,7 @@ In the **context strip** at the top, open **Active period** and choose **January
 
 You invoiced a client **£2,000** and the money arrived in your current account.
 
-1. Go to **Journal workbench**.
+1. From **home**, open **Bookkeeping**, then **Journal workbench** in the left menu.
 2. Set **Entry date** to a day in January 2026 (inside your period).
 3. **Description:** `Consulting fees – Project North`.
 4. **Entry kind:** leave as **Normal** unless your accountant asked otherwise.
@@ -139,7 +168,7 @@ You can confirm it under **Journal (audit)** or on **Financial Pulse** in the re
 
 You paid **£800** rent from the same bank account.
 
-1. **Journal workbench** again.
+1. Open **Journal workbench** again (via **home** → **Bookkeeping** if you left that area).
 2. **Entry date:** a valid day in your open period.
 3. **Description:** `January office rent`.
 4. Lines:
@@ -159,7 +188,7 @@ The workbench looks the same as in the previous screenshot; only the accounts, a
 
 Suppose you posted the wrong amount and want to **undo** it with a matching opposite entry (your accountant may call this a reversing journal).
 
-1. Open **Financial Pulse** or **Journal (audit)**.
+1. From **home**, open **Bookkeeping**, then **Financial Pulse** or **Journal (audit)**.
 2. Locate the wrong entry in the list.
 3. Use the option to **reverse** or **prepare reversal** (if shown). That typically fills the **Journal workbench** with opposite debits and credits.
 4. Read the suggested lines, adjust the **description** if you like (for example `Reversal of incorrect rent posting`), and post as a **new** entry.
@@ -172,7 +201,7 @@ Always treat reversals as real journals: they should still balance and use corre
 
 ## Example: run reports at month end
 
-1. Open **Reports**.
+1. From **home**, open **Bookkeeping**, then **Reports**.
 2. **Trial balance**  
    - Pick an **as of** date (for example **31 January 2026**).  
    - Load the report. You should see each account and its balance; debits and credits should tie out across the list.
@@ -181,7 +210,7 @@ Always treat reversals as real journals: they should still balance and use corre
 4. **Balance sheet**  
    - Click that tab, pick the same **as of** date as your trial balance, then load.
 
-All figures use the **functional currency** you set under Business & books.
+All figures use the **functional currency** you set in the **legal entity & currency** screen (from **Configuration** on the home portal).
 
 ![Reports screen with Trial balance tab, date field, and Load button.](images/user-guide/07-reports-trial-balance.png)
 
@@ -191,7 +220,7 @@ All figures use the **functional currency** you set under Business & books.
 
 When a month is finished and you are ready to close it:
 
-1. Open **Periods & closing** (see the screenshot in the setup section above).
+1. From **home**, open **Bookkeeping**, then **Periods & closing** (see the screenshot in the setup section above).
 2. Find the period (for example **January 2026**).
 3. Open the **closing** or **closing assistant** action for that period. DEBK will show summaries that help you see temporary accounts and profit for the period.
 4. If your process requires a formal **closing** journal, go to **Journal workbench**, set **Entry kind** to **Closing** where appropriate, and post the entries your accountant expects (often involving **Retained earnings**). The assistant supports your judgement; you still post the actual journal in the workbench when needed.
@@ -219,19 +248,20 @@ Useful for answering “why is the bank balance this number?” without reading 
 | ----------------- | ------------- |
 | Blank page or “cannot connect” | Make sure DEBK is still running, then use the **same web address** the program gave you when it started (if you restart DEBK, it may show a slightly different address — use the new one). |
 | Cannot save a journal | Check that **debits equal credits**, the **date** is inside a period you created, and you picked real accounts from your chart. Read any message on the screen — it usually says what failed. |
-| Wrong currency on screen | Go to **Business & books → Business profile**, set the right **Functional currency**, and save again. |
+| Wrong currency on screen | Go to **Configuration** → **Legal entity & functional currency**, set the right **Functional currency**, and save again. |
 | You want a backup | Copy DEBK’s data folder from your computer while DEBK is **fully closed**, or use your normal backup software on that folder. Keep copies in a safe place the same way you would for any important files. |
 
 ---
 
 ## Quick recap
 
-1. Set **business name** and **currency**.  
-2. Build your **chart of accounts** and create at least one **period**.  
-3. Pick the **active period** in the context strip.  
-4. Post balanced journals in the **workbench**.  
-5. Check **Financial Pulse** for a quick view and **Reports** for formal statements.  
-6. Use **Periods & closing** when a period is finished.
+1. **Sign in** (or create the **first administrator** once). Use **Identity & access** from the home portal if you need to add operators.  
+2. Set **business name** and **currency**.  
+3. Build your **chart of accounts** and create at least one **period**.  
+4. Pick the **active period** in the context strip.  
+5. Post balanced journals in the **workbench**.  
+6. Check **Financial Pulse** for a quick view and **Reports** for formal statements.  
+7. Use **Periods & closing** when a period is finished.
 
 DEBK is built around **one business** in one place on one computer — enough for many small organisations and sole traders who want clear double-entry books without sharing data online.
 
@@ -242,10 +272,35 @@ DEBK is built around **one business** in one place on one computer — enough fo
 If you change the layout or colours of the app, refresh the PNG files so this guide stays accurate.
 
 1. From the `web` folder, run `npm run build` so the embedded UI matches the latest design.
-2. Start DEBK and note the web address it prints (for example `http://localhost:12345`).
+2. Start DEBK and note the web address it prints (for example `http://127.0.0.1:54321`).
 3. Install the automation browser once: `npx playwright install chromium` (from `web/`).
-4. From `web/`, run:  
-   `DEBK_BASE_URL=http://localhost:12345 npm run capture-user-guide-screens`  
-   (replace the address with yours).
+4. From `web/`, run the capture script with your base URL and credentials.
 
-New images are written to `docs/images/user-guide/`. Commit them with your UI changes.
+**Always set** `DEBK_BASE_URL` to the address DEBK printed when it started.
+
+**First screen (`onboarding-login.png`):** the script saves this before it signs in. You will get **Create first administrator** if the database has no operators yet, or **Sign in** if users already exist.
+
+**Authenticated screens (home portal, identity, bookkeeping, configuration, reports):**
+
+- If you see **Sign in**, set `DEBK_USER_GUIDE_LOGIN` and `DEBK_USER_GUIDE_PASSWORD` to an operator that can reach every area you want in the guide (typically an **Administrator**).
+- If you see **Create first administrator**, set `DEBK_USER_GUIDE_BOOTSTRAP_LOGIN` and `DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD` (and optionally `DEBK_USER_GUIDE_BOOTSTRAP_DISPLAY_NAME`) so the script can submit that form once; it will then capture the rest using the new account.
+
+Example (existing user):
+
+```bash
+DEBK_BASE_URL=http://127.0.0.1:54321 \
+DEBK_USER_GUIDE_LOGIN=alice \
+DEBK_USER_GUIDE_PASSWORD='your-secret' \
+npm run capture-user-guide-screens
+```
+
+Example (bootstrap on an empty database):
+
+```bash
+DEBK_BASE_URL=http://127.0.0.1:54321 \
+DEBK_USER_GUIDE_BOOTSTRAP_LOGIN=alice \
+DEBK_USER_GUIDE_BOOTSTRAP_PASSWORD='your-secret' \
+npm run capture-user-guide-screens
+```
+
+New and updated images are written to `docs/images/user-guide/`. Commit them with your UI changes.
