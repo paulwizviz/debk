@@ -34,6 +34,7 @@ const ROLE_PERMS = {
   user: [
     P.businessRead,
     P.coaRead,
+    P.coaWrite,
     P.journalRead,
     P.journalWrite,
     P.periodRead,

@@ -17,7 +17,10 @@ export function UserSessionProvider({ children, operator }) {
   const value = useMemo(() => {
     const roles = operator?.roles ?? [];
     const portalIdentity = hasAnyPerm(roles, P.userRead, P.userWrite, P.userInvite);
-    const portalConfigure = hasPerm(roles, P.coaWrite);
+    // Configuration area covers the business profile (legal entity & currency),
+    // which is administrator-only. Chart of accounts and periods now live under
+    // Bookkeeping and follow coa:write / period:write respectively.
+    const portalConfigure = hasPerm(roles, P.businessWrite);
     const portalBooks = hasAnyPerm(roles, P.journalRead, P.journalWrite, P.reportRead);
 
     return {

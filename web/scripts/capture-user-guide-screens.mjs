@@ -59,7 +59,7 @@ async function main() {
   }
 
   async function waitAppChrome() {
-    await page.getByText('DEBK — Double-entry bookkeeping', { exact: true }).waitFor({
+    await page.getByRole('button', { name: 'toggle theme' }).waitFor({
       state: 'visible',
       timeout: 30000,
     });
@@ -105,7 +105,7 @@ To capture the rest of the guide, either:
       await page.getByLabel(/Display name \(optional\)/).fill(disp);
       await page.locator('input[name="password"]').fill(bPass);
       await page.getByRole('button', { name: 'Create account' }).click();
-      await page.getByText('DEBK — Double-entry bookkeeping', { exact: true }).waitFor({
+      await page.getByRole('button', { name: 'toggle theme' }).waitFor({
         state: 'visible',
         timeout: 30000,
       });
@@ -140,19 +140,47 @@ Wrote onboarding-login.png (Sign in). Set DEBK_USER_GUIDE_LOGIN and DEBK_USER_GU
     await gotoShell('/books');
     await save('01-financial-pulse.png');
 
-    await gotoShell('/business');
+    await gotoShell('/configure');
     await save('02-business-profile.png');
 
-    await gotoShell('/configure');
+    await gotoShell('/books/accounts');
     await save('03-chart-of-accounts.png', { fullPage: true });
 
     await gotoShell('/books/periods');
     await save('04-periods-and-closing.png', { fullPage: true });
 
-    await gotoShell('/books/workbench');
-    await save('05-journal-workbench.png', { fullPage: true });
-
     await gotoShell('/books/journal');
+    try {
+      await page.getByRole('button', { name: 'New transaction' }).click();
+      await page.getByRole('heading', { name: 'Quick Transaction' }).waitFor({ state: 'visible', timeout: 10000 });
+      // Best-effort fill so the screenshot shows the auto-generated preview.
+      await page.getByLabel('Description').fill('Monthly Printer Ink & Paper').catch(() => {});
+      await page.getByLabel('Amount').fill('120').catch(() => {});
+      try {
+        await page.getByRole('combobox', { name: 'Category' }).click();
+        await page.getByRole('option', { name: /Stationery/i }).first().click();
+      } catch {
+        /* leave Category empty if the picker shape differs */
+      }
+      try {
+        await page.getByRole('combobox', { name: 'Paid from' }).click();
+        await page.getByRole('option', { name: /Bank/i }).first().click();
+      } catch {
+        /* leave Paid from empty */
+      }
+      await page.waitForTimeout(500);
+    } catch (e) {
+      console.warn('quick transaction dialog capture was only partial:', e?.message);
+    }
+    await save('05-journal-workbench.png');
+    await page.keyboard.press('Escape').catch(() => {});
+
+    await gotoShell('/books/journal?tab=audit');
+    const auditTab = page.getByRole('tab', { name: 'Audit' });
+    if (await auditTab.isVisible().catch(() => false)) {
+      await auditTab.click();
+      await page.waitForTimeout(400);
+    }
     await save('06-journal-audit.png', { fullPage: true });
 
     await gotoShell('/books/reports');

@@ -1,13 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { Group as GroupIcon, AccountTree as AccountTreeIcon, MenuBook as MenuBookIcon } from '@mui/icons-material';
+import { Group as GroupIcon, AccountBalance as AccountBalanceIcon, MenuBook as MenuBookIcon } from '@mui/icons-material';
 import { useUserSession } from '../context/UserSessionContext';
 
 const cardSx = {
   maxWidth: 320,
   minHeight: 200,
   textAlign: 'center',
+  transition: 'transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease',
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    borderColor: 'primary.main',
+  },
 };
 
 export default function HomePortal() {
@@ -25,14 +30,14 @@ export default function HomePortal() {
     portalConfigure && {
       key: 'configure',
       title: 'Configuration',
-      subtitle: 'Allocate and maintain the chart of accounts.',
-      icon: <AccountTreeIcon sx={{ fontSize: 56, color: 'secondary.main' }} />,
+      subtitle: 'Maintain the legal entity and functional currency.',
+      icon: <AccountBalanceIcon sx={{ fontSize: 56, color: 'secondary.main' }} />,
       path: '/configure',
     },
     portalBooks && {
       key: 'books',
       title: 'Bookkeeping',
-      subtitle: 'Journals, periods, reports, and financial pulse.',
+      subtitle: 'Journals, chart of accounts, periods, and reports.',
       icon: <MenuBookIcon sx={{ fontSize: 56, color: 'success.main' }} />,
       path: '/books',
     },

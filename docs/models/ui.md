@@ -5,13 +5,14 @@
 | Use case | UI surface(s) | Notes |
 | :--- | :--- | :--- |
 | 1a. Installation & user administration | **Installer / first-run** + **Identity & access** (`/identity`) | Alice (**Administrator**): bootstrap, create `business`, manage operators and access types. Shown from the **home portal** when `user:read`, `user:write`, or `user:invite` applies. Enforce permission checks on every mutating API. |
-| 1b. Chart of accounts & opening structure | **Configuration** (`/configure`) + optional **Legal entity & currency** (`/business`) | **COA** screen is COA-only. **Business profile** (legal name, functional currency) is a separate route for principals with `business:write`. **Administrator** operators reach both; **User** operators do not. |
+| 1a*. Legal entity & currency | **Configuration** (`/configure`) | **Business profile** (legal name, functional currency) for principals with `business:write` (**Administrator** operators). **User** operators do not reach it. |
+| 1b. Chart of accounts & opening structure | **Chart of accounts** (`/books/accounts`) under **Bookkeeping** | COA add/edit (`acct` metadata) for operators with `coa:write`. Both **Administrator** and **User** (bookkeeper) operators reach it. |
 | 2. Internal treasury movement | **Journal workbench** (`/books/workbench`) | Same multi-line posting flow as other entries; optional quick labels (e.g. "Internal transfer") for narrative only. |
 | 3. Turnover (credit/cash) | **Journal workbench** | Balancing + account picker; no separate screen required unless templates are added later. |
 | 4. Complex split (payroll) | **Journal workbench** | Three+ lines; difference-to-zero gate matches acceptance criteria. |
 | 5. Adjusting (depreciation) | **Journal workbench** | User sets **`entry_kind` = adjusting** (or equivalent) so reports and audit lists can filter non-routine entries. Contra asset accounts appear in pickers when type = Asset + `is_contra`. |
-| 6. Closing the books | **Periods** (`/books/periods`) + **Closing assistant** | Select **accounting period** (or financial year end); review computed net activity on temporary accounts; confirm generation of **closing** `jnlentry` rows to retained earnings. Not a free-form manual line-by-line task unless advanced mode is explicitly offered. |
-| — (cross-cutting) | **Financial Pulse** (`/books`), **Journal audit** (`/books/journal`), **Reports** (`/books/reports`), **Account ledger** (`/books/ledger/account/:id`) | Grouped under **Bookkeeping** when `journal:read`, `journal:write`, or `report:read` applies. |
+| 6. Closing the books | **Periods** (`/books/periods`) under **Bookkeeping** + **Closing assistant** | Select **accounting period** (or financial year end); review computed net activity on temporary accounts; confirm generation of **closing** `jnlentry` rows to retained earnings. Not a free-form manual line-by-line task unless advanced mode is explicitly offered. |
+| — (cross-cutting) | **Financial Pulse** (`/books`), **Journal audit** (`/books/journal`), **Chart of accounts** (`/books/accounts`), **Periods** (`/books/periods`), **Reports** (`/books/reports`), **Account ledger** (`/books/ledger/account/:id`) | Grouped under **Bookkeeping** when `journal:read`, `journal:write`, or `report:read` applies. |
 
 **Gaps addressed in this document:** installation and **user/role** administration (1a), **COA** onboarding (1b), explicit **period** context (6), **entry_kind** in the workbench (5), a dedicated **closing** flow (6), and alignment with **immutability** (see **Recent activity** under Dashboard).
 
@@ -22,13 +23,13 @@ After a successful session is established, the default route **`/`** is a **home
 | Tile | Shown when (permission union) | Primary route | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Identity & access** | `user:read` **or** `user:write` **or** `user:invite` | `/identity` | Operator directory, add user, access type, passwords, enable/disable (**Administrators** only in the baseline product). |
-| **Configuration** | `coa:write` | `/configure` | **Chart of accounts only** (add/edit `acct` metadata). |
-| **Bookkeeping** | `journal:read` **or** `journal:write` **or** `report:read` | `/books` (nested layout) | Financial pulse, journal audit, workbench, periods, reports, account ledger—see **Bookkeeping layout** below. |
+| **Configuration** | `business:write` | `/configure` | **Business profile only** — legal entity and functional currency (**Administrator** operators). |
+| **Bookkeeping** | `journal:read` **or** `journal:write` **or** `report:read` | `/books` (nested layout) | Financial pulse, journal audit, workbench, chart of accounts, periods, reports, account ledger—see **Bookkeeping layout** below. |
 
 - **App chrome:** A top **AppBar** with **Home** (returns to `/`, hidden when already on `/`) and **Sign out**. There is **no** global navigation drawer on the hub; navigation is **scoped per area**.
-- **Legal entity & currency:** Operators with `business:write` reach **`/business`** from a control on **`/configure`** (keeps the configuration tile focused on COA).
+- **Chart of accounts:** Operators with `coa:write` (Administrator and User/bookkeeper) maintain the COA from **Bookkeeping → Chart of accounts** (`/books/accounts`).
 
-**Redirects (compatibility):** `/settings/users` → `/identity`; `/setup` → `/configure`; legacy `/journal`, `/workbench`, `/periods`, `/reports`, `/ledger/...` → equivalent paths under **`/books/...`**.
+**Redirects (compatibility):** `/settings/users` → `/identity`; `/setup` → `/books/accounts`; `/business` → `/configure`; legacy `/journal`, `/workbench`, `/periods`, `/reports`, `/ledger/...` → equivalent paths under **`/books/...`**.
 
 ## Administration and configuration panels
 
@@ -43,11 +44,17 @@ Use cases **1a** and **1b** use **dedicated routes** from the hub above. Operato
   - **Primary actions:** **Add user** (wizard or modal: login, display name, initial role assignment, optional invite copy); **Edit roles**; **Disable** / **re-enable**; **Reset password** (admin-mediated flow for local deployment—no email dependency).
 - **UX:** Inline validation; confirm destructive actions; clear empty state when only the bootstrap administrator exists; surface **403** from the API as human-readable “you are not allowed to change this.”
 
-### Configuration — chart of accounts (use case 1b)
+### Configuration — business profile (use case 1a*)
 
-- **Audience:** Principals with **`coa:write`** (**Administrator** operators).
+- **Audience:** Principals with **`business:write`** (**Administrator** operators).
+- **Purpose:** Maintain the **business** **legal name** and **functional currency** at **`/configure`**.
+- **Chart of accounts** is **not** part of this screen; it lives under **Bookkeeping → Chart of accounts** (`/books/accounts`) for operators with **`coa:write`**.
+
+### Chart of accounts (use case 1b)
+
+- **Audience:** Principals with **`coa:write`** (**Administrator** and **User/bookkeeper** operators).
+- **Route:** **`/books/accounts`** within the bookkeeping layout.
 - **Purpose:** Maintain **`acct`** rows: **`acctype`**, **`is_temporary`**, **`is_contra`**; validation errors inline; explicit confirmation when the system **auto-provisions retained earnings**.
-- **Business profile** (legal name, functional currency) is **not** mixed into this screen; it lives at **`/business`** for operators with **`business:write`**, linked from `/configure`.
 
 ## Bookkeeping layout
 
@@ -55,10 +62,10 @@ Under **`/books`**, a **persistent drawer** (on wide viewports) lists only bookk
 
 | Label | Route |
 | :--- | :--- |
-| Financial Pulse | `/books` |
-| Journal (audit) | `/books/journal` |
-| Journal workbench | `/books/workbench` |
-| Periods & closing | `/books/periods` |
+| Overview | `/books` |
+| Journal | `/books/journal` |
+| Chart of accounts | `/books/accounts` |
+| Periods | `/books/periods` |
 | Reports | `/books/reports` |
 
 Account ledger drill-downs use **`/books/ledger/account/:id`**. Narrow viewports use a **menu** control to open the same list temporarily.
