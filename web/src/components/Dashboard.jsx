@@ -112,8 +112,8 @@ export default function Dashboard() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Balances use the balance sheet report as of today. Posted journals are immutable—correct mistakes with a reversing
         entry in the{' '}
-        <Button component={RouterLink} to="/books/workbench" size="small">
-          Journal workbench
+        <Button component={RouterLink} to="/books/journal" size="small">
+          Journal
         </Button>
         .
       </Typography>
@@ -253,10 +253,10 @@ export default function Dashboard() {
                         <Button
                           size="small"
                           component={RouterLink}
-                          to={`/books/workbench?reverse=${entry.id}`}
+                          to={`/books/journal?tab=entry&reverse=${entry.id}`}
                           state={{ reverseEntry: entry }}
                         >
-                          Reverse in workbench
+                          Reverse in journal
                         </Button>
                       </TableCell>
                     </TableRow>

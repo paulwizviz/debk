@@ -19,7 +19,6 @@ import {
   MenuItem,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import ContextBar from './ContextBar';
 import { apiGet } from '../api/client';
 import { formatMoney, formatDate } from '../utils/money';
 import { useApp } from '../context/AppContext';
@@ -61,13 +60,6 @@ export default function JournalAudit() {
 
   return (
     <Box>
-      <ContextBar />
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h4">Journal (audit trail)</Typography>
-        <Button variant="contained" component={RouterLink} to="/books/workbench">
-          New entry
-        </Button>
-      </Stack>
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <TextField
@@ -134,7 +126,12 @@ export default function JournalAudit() {
                 <Button size="small" onClick={() => setDetail(e)}>
                   View
                 </Button>
-                <Button size="small" component={RouterLink} to={`/books/workbench?reverse=${e.id}`} state={{ reverseEntry: e }}>
+                <Button
+                  size="small"
+                  component={RouterLink}
+                  to={`/books/journal?tab=entry&reverse=${e.id}`}
+                  state={{ reverseEntry: e }}
+                >
                   Reverse
                 </Button>
               </TableCell>

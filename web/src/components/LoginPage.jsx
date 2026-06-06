@@ -94,7 +94,26 @@ export default function LoginPage() {
       : 'Enter your credentials for this DEBK installation.';
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
+    <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 6 }}>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Typography
+          variant="h3"
+          component="div"
+          sx={{
+            fontWeight: 800,
+            letterSpacing: '0.06em',
+            background: 'linear-gradient(135deg, #2DD4BF, #22D3EE)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          DEBK
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Double-entry bookkeeping
+        </Typography>
+      </Box>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h5" gutterBottom>
           {title}

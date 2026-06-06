@@ -31,10 +31,12 @@ var rolePermissions = map[string][]string{
 		PermReportRead,
 		PermUserRead, PermUserWrite, PermUserInvite,
 	},
-	// User: bookkeeping and reports only (read COA and business for context).
+	// User (bookkeeper): bookkeeping, reports, chart of accounts, and periods.
+	// Can configure the books (COA + periods) but cannot assign identity
+	// (no user:*) or edit the business profile (no business:write).
 	operator.RoleUser: {
 		PermBusinessRead,
-		PermCoaRead,
+		PermCoaRead, PermCoaWrite,
 		PermJournalRead, PermJournalWrite,
 		PermPeriodRead, PermPeriodWrite,
 		PermReportRead,

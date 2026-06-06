@@ -78,7 +78,7 @@ export default function ContextBar() {
           >
             {periods.length === 0 && (
               <MenuItem value="" disabled>
-                No periods — create one under Periods & closing
+                No periods — create one under Bookkeeping → Periods
               </MenuItem>
             )}
             {periods.map((p) => (

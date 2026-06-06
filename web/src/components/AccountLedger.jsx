@@ -82,7 +82,7 @@ export default function AccountLedger() {
     <Box>
       <ContextBar />
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link component={RouterLink} to="/configure" underline="hover">
+        <Link component={RouterLink} to="/books/accounts" underline="hover">
           Chart of accounts
         </Link>
         <Typography color="text.primary">Ledger</Typography>

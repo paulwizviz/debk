@@ -119,6 +119,7 @@ func parseTimeFlexible(s string) (time.Time, error) {
 func (r *repo) scanEntry(row *sql.Row) (*Detail, error) {
 	var entry Detail
 	var entryDateStr, createdStr, postedStr string
+	var ref sql.NullString
 	var period sql.NullInt64
 	err := row.Scan(
 		&entry.ID,
@@ -127,7 +128,7 @@ func (r *repo) scanEntry(row *sql.Row) (*Detail, error) {
 		&entry.JournalSeq,
 		&entryDateStr,
 		&entry.Description,
-		&entry.Reference,
+		&ref,
 		&entry.EntryKind,
 		&createdStr,
 		&postedStr,
@@ -136,6 +137,7 @@ func (r *repo) scanEntry(row *sql.Row) (*Detail, error) {
 	if err != nil {
 		return nil, err
 	}
+	entry.Reference = ref.String
 	if period.Valid {
 		entry.PeriodID = int(period.Int64)
 	}
@@ -215,14 +217,16 @@ func (r *repo) List(ctx context.Context, businessID int) ([]Detail, error) {
 	for rows.Next() {
 		var entry Detail
 		var entryDateStr, createdStr, postedStr string
+		var ref sql.NullString
 		var period sql.NullInt64
 		if err := rows.Scan(
 			&entry.ID, &entry.BusinessID, &period, &entry.JournalSeq,
-			&entryDateStr, &entry.Description, &entry.Reference, &entry.EntryKind,
+			&entryDateStr, &entry.Description, &ref, &entry.EntryKind,
 			&createdStr, &postedStr, &entry.IsClosing,
 		); err != nil {
 			return nil, fmt.Errorf("scanning journal entry: %w", err)
 		}
+		entry.Reference = ref.String
 		if period.Valid {
 			entry.PeriodID = int(period.Int64)
 		}

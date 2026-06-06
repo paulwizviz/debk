@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -68,9 +68,7 @@ export default function BusinessProfile() {
         Legal entity & currency
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        <Button component={RouterLink} to="/configure" size="small" sx={{ mr: 1 }}>
-          Back to chart of accounts
-        </Button>
+        Configure the registered legal name and functional currency for this business.
       </Typography>
       <Paper sx={{ p: 2, maxWidth: 480 }}>
         {msg && (
