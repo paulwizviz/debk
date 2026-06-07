@@ -35,7 +35,7 @@ The first page is always the same route; the **title** tells you which case appl
 The **Welcome** screen lists **tiles** for each area your roles allow. Your name appears under the welcome line. Use the **house** icon in the top bar to return here from anywhere else.
 
 - **Identity & access** — manage who can sign in (**Administrators** only).
-- **Configuration** — the business profile: legal name and currency (**Administrators** only).
+- **Configuration** — the business profile (legal name and currency) and a one-time option to **pre-populate the chart of accounts** from a ready-made template (**Administrators** only).
 - **Bookkeeping** — the day-to-day books: transactions, chart of accounts, periods, and reports (**Administrators** and **Users**).
 
 ![Welcome: home tiles for Identity & access, Configuration, and Bookkeeping.](images/user-guide/onboarding-home-portal.png)
@@ -84,7 +84,7 @@ The same strip appears on the screenshot above. The active period you pick stays
 | **Periods** | Define months or quarters, preview figures with the closing assistant, and mark a period as closed when you are ready. |
 | **Reports** | Trial balance, profit and loss, and balance sheet for dates you choose. |
 
-**Configuration** (from the home tiles, **Administrators** only): the **business profile** — your **legal name** and **functional currency**.
+**Configuration** (from the home tiles, **Administrators** only): the **business profile** — your **legal name** and **functional currency** — and a one-time **Pre-populate chart of accounts** option (see the next section).
 
 Some screens offer a link to open **one account’s ledger** — a running story of that account only.
 
@@ -102,7 +102,31 @@ DEBK records each transaction as a **single entry**, and does the double-entry b
 
 As you choose the two accounts, a small **System entry (auto-generated)** preview shows exactly what DEBK will post: one **DEBIT** line (your Category) and one **CREDIT** line (your Paid from), for the same amount. Always glance at this preview before you post — it confirms the bookkeeping is the right way round.
 
+After you **Post transaction**, the form closes and the **Workbench** shows a **Posted entry** panel confirming what was recorded: the entry’s number and date, your description, and the matching **DEBIT** and **CREDIT** lines with their amounts. The panel updates each time you post, so you always see the double entry DEBK just made without leaving the Workbench. (The full history is still under the **Audit** tab.)
+
 > Tip: “Category” is always the **debit** and “Paid from” is always the **credit**. For an expense paid from the bank this reads naturally. For money *received* into the bank, set **Category** to your bank account (it is debited when money comes in) and **Paid from** to the income account.
+
+---
+
+## Pre-populating your chart of accounts (templates)
+
+Rather than typing every account by hand, an **Administrator** can create a ready-made **chart of accounts** in one step. On the **home** screen open **Configuration**; below the business profile you will find **Pre-populate chart of accounts** with four enterprise types to choose from:
+
+- **Professional services** — consultancies, agencies and practices that bill fees for time and expertise (no stock).
+- **Retail** — shops selling goods over the counter, holding stock and taking card payments.
+- **E-commerce** — online sellers shipping goods, with payment gateways, marketplaces and fulfilment costs.
+- **Manufacturing** — makers turning raw materials into finished goods, with work in progress and plant assets.
+
+Pick the type closest to your business and confirm. DEBK creates a sensible starter set — a bank account, trade debtors and creditors, VAT and payroll control accounts, sales, common overheads, and the accounts specific to your sector (for example *Stock* for retail, or *Raw materials* and *Work in progress* for manufacturing).
+
+A few things worth knowing:
+
+- **It is a one-time setup.** The templates are offered **only while your chart is empty**. As soon as you apply one — or add any account by hand — the options disappear, so you cannot accidentally mix two templates.
+- **Administrators only.** The option lives in **Configuration**. If you are a **User** (bookkeeper) you will not see it; ask an administrator to run it for you.
+- **You can always extend it.** The created accounts are ordinary accounts. Afterwards, anyone with bookkeeping access adds, renames, or adjusts accounts under **Bookkeeping → Chart of accounts** in the usual way.
+- **Retained earnings is handled for you.** DEBK keeps a *Retained earnings* equity account automatically, so it is never part of a template.
+
+If none of the four types fits, simply skip this step and build the chart by hand, as the example below shows.
 
 ---
 
@@ -122,6 +146,8 @@ You should see the context strip update with your name and currency when you ope
 ![Configuration: business profile with legal name, functional currency, and Save.](images/user-guide/02-business-profile.png)
 
 ### 2. Add a few accounts
+
+> Shortcut: if you are an administrator, you can **pre-populate** a whole starter chart from **Configuration** in one step (see *Pre-populating your chart of accounts* above) and then just tweak it here. The manual steps below show how to build or extend the chart by hand.
 
 1. From **home**, open **Bookkeeping**, then **Chart of accounts** in the left menu.
 2. Add accounts you will actually use. For example:
@@ -173,7 +199,7 @@ You invoiced a client **£2,000** and the money arrived in your current account.
 7. **Paid from:** `Sales – consulting`.
 8. Check the **System entry** preview — it should show **DEBIT Bank – current £2,000** and **CREDIT Sales – consulting £2,000** — then choose **Post transaction**.
 
-You can confirm it under **Journal → Audit** or on **Overview** in the recent activity list.
+The **Posted entry** panel then appears on the Workbench, repeating those debit and credit lines so you can confirm at a glance. You can also see it under **Journal → Audit** or on **Overview** in the recent activity list.
 
 ![Journal → Workbench: the Quick Transaction form with date, description, amount, Category, Paid from, and the auto-generated debit/credit preview.](images/user-guide/05-journal-workbench.png)
 
@@ -267,10 +293,10 @@ Useful for answering “why is the bank balance this number?” without reading 
 ## Quick recap
 
 1. **Sign in** (or create the **first administrator** once). Use **Identity & access** from the home portal if you need to add operators.  
-2. Set **business name** and **currency** under **Configuration** (administrators).  
-3. Build your **chart of accounts** and create at least one **period**, both under **Bookkeeping**.  
+2. Set **business name** and **currency** under **Configuration** (administrators); while you are there, optionally **pre-populate the chart of accounts** from a template (one-time, administrators).  
+3. Build or extend your **chart of accounts** and create at least one **period** (the chart and periods both live under **Bookkeeping**).  
 4. Pick the **active period** in the context strip.  
-5. Record transactions with **Journal → Workbench → New transaction** (the **Quick Transaction** form).  
+5. Record transactions with **Journal → Workbench → New transaction** (the **Quick Transaction** form); the **Posted entry** panel then confirms the debit and credit.  
 6. Check **Overview** for a quick view and **Reports** for formal statements.  
 7. Use **Periods** and the closing assistant when a period is finished.
 

@@ -78,6 +78,8 @@ func (r *RESTFul) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PATCH /api/business/{id}", r.patchBusiness)
 
 	mux.HandleFunc("GET /api/accounts", r.listAccounts)
+	mux.HandleFunc("GET /api/accounts/templates", r.listAccountTemplates)
+	mux.HandleFunc("POST /api/accounts/templates/{key}", r.applyAccountTemplate)
 	mux.HandleFunc("GET /api/accounts/{id}", r.getAccount)
 	mux.HandleFunc("POST /api/accounts", r.createAccount)
 

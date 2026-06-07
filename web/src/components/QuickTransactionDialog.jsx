@@ -99,8 +99,15 @@ export default function QuickTransactionDialog({ open, onClose, accounts = [], i
 
     setSaving(true);
     try {
-      await apiPost('/api/journal-entries', body);
-      onPosted?.(body.description);
+      const created = await apiPost('/api/journal-entries', body);
+      onPosted?.({
+        description: body.description,
+        entry_date: form.entry_date,
+        amount: amountNum,
+        journal_seq: created?.journal_seq,
+        debit: debitAccount ? { code: debitAccount.code, name: debitAccount.name } : null,
+        credit: creditAccount ? { code: creditAccount.code, name: creditAccount.name } : null,
+      });
       onClose?.();
     } catch (e) {
       setError(e.message || String(e));
