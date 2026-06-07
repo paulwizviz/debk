@@ -28,6 +28,14 @@ const (
 // ErrNotFound is returned when an account does not exist.
 var ErrNotFound = errors.New("account not found")
 
+// ErrTemplateNotFound is returned when an unknown chart-of-accounts template
+// key is requested.
+var ErrTemplateNotFound = errors.New("chart of accounts template not found")
+
+// ErrTemplateUnavailable is returned when a template is applied to a chart that
+// already holds user accounts. Pre-population is a one-time bootstrap.
+var ErrTemplateUnavailable = errors.New("chart of accounts already populated")
+
 var (
 	CreateAcctTableSQL = `CREATE TABLE IF NOT EXISTS ` + TblAcct + ` (
 		` + ColAcctID + ` INTEGER PRIMARY KEY,
@@ -66,4 +74,10 @@ type Service interface {
 	GetAccount(ctx context.Context, id int) (*Detail, error)
 	ListAccounts(ctx context.Context, businessID int) ([]Detail, error)
 	EnsureRetainedEarnings(ctx context.Context, businessID int) error
+	// CountUserAccounts returns the number of accounts excluding the
+	// system-provisioned Retained Earnings account.
+	CountUserAccounts(ctx context.Context, businessID int) (int, error)
+	// ApplyTemplate seeds an empty chart with the named enterprise template.
+	// It returns ErrTemplateUnavailable if user accounts already exist.
+	ApplyTemplate(ctx context.Context, businessID int, key string) ([]Detail, error)
 }

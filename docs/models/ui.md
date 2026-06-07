@@ -48,7 +48,9 @@ Use cases **1a** and **1b** use **dedicated routes** from the hub above. Operato
 
 - **Audience:** Principals with **`business:write`** (**Administrator** operators).
 - **Purpose:** Maintain the **business** **legal name** and **functional currency** at **`/configure`**.
-- **Chart of accounts** is **not** part of this screen; it lives under **Bookkeeping → Chart of accounts** (`/books/accounts`) for operators with **`coa:write`**.
+- **Pre-populate chart of accounts:** From the same screen administrators can seed a starter chart from an enterprise template (**Professional services**, **Retail**, **E-commerce**, **Manufacturing**). This is **administrator-only** (`business:write`) and a **one-time bootstrap** — the options are offered only while the chart is empty (Retained Earnings aside) and disappear once a template is applied. Seeded accounts are ordinary `acct` rows that are then **extended under Bookkeeping → Chart of accounts**.
+  - API: `GET /api/accounts/templates` (lists templates and an `available` flag); `POST /api/accounts/templates/{key}` (applies; `409` if the chart is already populated, `404` for an unknown key).
+- **Chart of accounts (editing)** is **not** part of this screen; it lives under **Bookkeeping → Chart of accounts** (`/books/accounts`) for operators with **`coa:write`**.
 
 ### Chart of accounts (use case 1b)
 

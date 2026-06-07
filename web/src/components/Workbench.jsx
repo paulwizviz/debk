@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Alert } from '@mui/material';
+import { Box, Typography, Button, Alert, Paper, Stack, Chip } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { apiGet } from '../api/client';
+import { formatMoney } from '../utils/money';
 import QuickTransactionDialog from './QuickTransactionDialog';
 
 /**
@@ -13,11 +14,12 @@ import QuickTransactionDialog from './QuickTransactionDialog';
 export default function Workbench() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
-  const { refreshAll } = useApp();
+  const { refreshAll, currency } = useApp();
   const [accounts, setAccounts] = useState([]);
   const [open, setOpen] = useState(false);
   const [initial, setInitial] = useState(null);
   const [message, setMessage] = useState(null);
+  const [posted, setPosted] = useState(null);
 
   useEffect(() => {
     apiGet('/api/accounts')
@@ -80,8 +82,9 @@ export default function Workbench() {
     clearReverseParam();
   };
 
-  const handlePosted = async (description) => {
-    setMessage({ severity: 'success', text: `Posted “${description}”.` });
+  const handlePosted = async (entry) => {
+    setPosted(entry);
+    setMessage({ severity: 'success', text: `Posted “${entry.description}”.` });
     try {
       await refreshAll?.();
     } catch {
@@ -111,6 +114,8 @@ export default function Workbench() {
         New transaction
       </Button>
 
+      {posted && <PostedEntry entry={posted} currency={currency} />}
+
       <QuickTransactionDialog
         open={open}
         onClose={handleClose}
@@ -119,5 +124,49 @@ export default function Workbench() {
         onPosted={handlePosted}
       />
     </Box>
+  );
+}
+
+const acctLabel = (a) => (a ? `${a.code} — ${a.name}` : '—');
+
+/** Shows the balanced double entry DEBK posted for the last quick transaction. */
+function PostedEntry({ entry, currency }) {
+  const amount = formatMoney(entry.amount, currency);
+  return (
+    <Paper variant="outlined" sx={{ mt: 3, p: 2, maxWidth: 560 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: 1 }}>
+        <Typography variant="overline" color="text.secondary">
+          Posted entry{entry.journal_seq ? ` · #${entry.journal_seq}` : ''}
+        </Typography>
+        {entry.entry_date && (
+          <Typography variant="caption" color="text.secondary">
+            {entry.entry_date}
+          </Typography>
+        )}
+      </Stack>
+      <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+        {entry.description}
+      </Typography>
+      <Stack spacing={1}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+            <Chip size="small" color="success" label="DEBIT" />
+            <Typography variant="body2" noWrap>
+              {acctLabel(entry.debit)}
+            </Typography>
+          </Stack>
+          <Typography variant="body2">{amount}</Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+            <Chip size="small" color="warning" label="CREDIT" />
+            <Typography variant="body2" noWrap>
+              {acctLabel(entry.credit)}
+            </Typography>
+          </Stack>
+          <Typography variant="body2">{amount}</Typography>
+        </Stack>
+      </Stack>
+    </Paper>
   );
 }

@@ -10,6 +10,7 @@ import {
   Alert,
 } from '@mui/material';
 import ContextBar from './ContextBar';
+import CoaTemplatePicker from './CoaTemplatePicker';
 import { apiGet, apiPatch, BUSINESS_ID } from '../api/client';
 import { useUserSession } from '../context/UserSessionContext';
 
@@ -102,6 +103,8 @@ export default function BusinessProfile() {
           )}
         </Stack>
       </Paper>
+
+      <CoaTemplatePicker />
     </Box>
   );
 }
